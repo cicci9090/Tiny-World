@@ -1,13 +1,22 @@
 // Scena 3D della battaglia: traduce lo stato del motore (eroi, boss, telegrafi, muri, spuntoni, eventi) in chiamate a Mini3D.
 // Uso: const S = Scene3D(canvas, overlayCanvas); S.event(ev) per ogni evento del motore; S.frame(eng, dt) a ogni fotogramma.
 (function () {
+  /** texture corteccia/foglie dell'originale (gli stessi file di tronchi e chiome del mondo aperto), caricate una volta */
+  const TT = { bark: null, leaf: null, started: false };
+  function treeTex() {
+    if (!TT.started && window.__ASSETS && window.__scene3dR) {
+      TT.started = true;
+      for (const [k, f] of [['bark', 'tex_49_05477c72.jpg'], ['leaf', 'tex_50_9be679d0.jpg']]) { const src = window.__ASSETS[f]; if (!src) continue; const img = new Image(); img.onload = () => { try { TT[k] = window.__scene3dR.makeTex(img); } catch (e) {} }; img.src = src; }
+    }
+    return TT;
+  }
   const SPKPAL = {fire:['#2a1410','#ff8a30','lava'],phoenix:['#3a1a0c','#ffd060','lava'],magma:['#1e1208','#ff6a10','lava'],blood:['#3a0a0a','#ff4a4a','horn'],frost:['#7aa8c8','#cdf4ff','ice'],ancient:['#5a6a7a','#a0d0ff','ice'],crystal:['#5ab0d8','#d0ffff','crys'],nature:['#2f5a2a','#9ad064','thorn'],venom:['#2a3a1a','#b0ff60','thorn'],shadow:['#2a2438','#a07aff','shade'],void:['#1a1030','#7c3aed','shade'],spectral:['#8a9ad0','#e0e8ff','shade'],chaos:['#4a1a5a','#ff80ff','shade'],bone:['#d8d0b8','#9aff9a','bone'],sand:['#b8924a','#fff0b0','stone'],storm:['#3a4a5a','#fff3a0','bolt'],thunder:['#4a3a1a','#ffd060','bolt'],light:['#e8e0c8','#fff0a0','bolt'],celestial:['#c8d0f0','#ffffff','bolt'],abyss:['#10306a','#60e0ff','water']};
   const hex = (h, k = 1) => { h = String(h || '#888').replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); const n = parseInt(h, 16); return [((n >> 16) & 255) / 255 * k, ((n >> 8) & 255) / 255 * k, (n & 255) / 255 * k]; };
   const ARCH = { tank: '#3b82f6', healer: '#4ade80', melee: '#f59e0b', ranged: '#c084fc' };
   const CW = {}, CH = {}, THKEY = { fire: 'inferno', frost: 'frost', nature: 'natura', shadow: 'ombra', storm: 'tempesta', blood: 'sangue', crystal: 'cristallo', magma: 'magma', spectral: 'spettrale', bone: 'ossa', light: 'luce', abyss: 'abisso' };
   window.Scene3D = function (canvas, overlay, classes) {
     if (classes) for (const k in classes) { CW[k] = classes[k].weapon; CH[k] = classes[k].helmet; }
-    const r = Mini3D(canvas); if (!r) return null; r.camera({ yaw: 0, pitch: .87, dist: 16 });
+    const r = Mini3D(canvas); if (!r) return null; r.camera({ yaw: 0, pitch: .87, dist: 16 }); window.__scene3dR = r;
     let QD = null; const qc = {};
     /** quadrato con UV + texture del cerchio d'area (DBA_VTEX dell'originale), una per tipo di abilità */
     const quadFor = (type) => {
@@ -274,7 +283,11 @@
         for (const p of st.props) { const X = p.x, Z = p.z, S = p.sc, c = (y, k) => y * S;
           switch (p.k) {
             case 's': r.draw('cone', m.trs(X, 2.5 * S, Z, p.ry, .9 * S, 5 * S, .9 * S), { color: C0 }); r.draw('sphere', m.trs(X, 5.1 * S, Z, 0, .35 * S), { color: C1, emissive: 1 }); r.draw('cyl', m.trs(X, .25 * S, Z, 0, .7 * S, .5 * S, .7 * S), { color: C0 }); break;
-            case 't': r.draw('cyl', m.trs(X, 1.6 * S, Z, 0, .4 * S, 3.2 * S, .4 * S), { color: C0 }); for (let i = 0; i < 3; i++) r.draw('cone', m.trs(X, (3 + i * 1.1) * S, Z, 0, (1.9 - i * .5) * S, 2.4 * S, (1.9 - i * .5) * S), { color: i % 2 ? [.23, .48, .16] : [.16, .35, .13] }); break;
+            case 't': { const T = treeTex(), bk = T.bark ? { tex: T.bark, tri: .35, color: [1.5, 1.4, 1.3] } : { color: C0 }, lf = T.leaf ? { tex: T.leaf, tri: .3, color: [1.5, 1.6, 1.4] } : null;
+              r.draw('cyl', m.trs(X, 1.6 * S, Z, 0, .5 * S, 3.2 * S, .5 * S), bk);
+              if (p.v[0] < .5) for (let k = 0; k < 3; k++) r.draw('cone', m.trs(X, (3 + k * 1.2) * S, Z, 0, (2.4 - k * .6) * S, 2.6 * S, (2.4 - k * .6) * S), lf || { color: k % 2 ? [.23, .48, .16] : [.16, .35, .13] });
+              else { r.draw('sphere', m.trs(X, 4.1 * S, Z, 0, 2.3 * S, 1.8 * S, 2.3 * S), lf || { color: [.2, .42, .15] }); r.draw('sphere', m.trs(X + .9 * S, 3.4 * S, Z + .4 * S, 0, 1.5 * S, 1.2 * S, 1.5 * S), lf || { color: [.2, .42, .15] }); }
+              break; }
             case 'm': r.draw('cyl', m.trs(X, .8 * S, Z, 0, .25 * S, 1.6 * S, .25 * S), { color: C0 }); r.draw('sphere', m.trs(X, 1.7 * S, Z, 0, 1.1 * S, .55 * S, 1.1 * S), { color: C1, emissive: 1 }); break;
             case 'c': for (let i = 0; i < 5; i++) { const h = 1.8 + p.v[i] * 2.4; r.draw('cone', m.trs(X + (p.v[(i + 1) % 5] - .5) * 1.4 * S, h / 2 * S, Z + (p.v[(i + 2) % 5] - .5) * 1.4 * S, 0, (.35 + p.v[i] * .25) * S, h * S, (.35 + p.v[i] * .25) * S), { color: i % 2 ? C1 : C0, emissive: i % 2 ? .9 : 0 }); } break;
             case 'p': r.draw('cyl', m.trs(X, 2.25 * S, Z, 0, .62 * S, 4.5 * S, .62 * S), { color: C0 }); r.draw('cyl', m.trs(X, 4.6 * S, Z, 0, .75 * S, .3 * S, .75 * S), { color: C0 }); r.draw('sphere', m.trs(X, 5 * S, Z, 0, .3 * S), { color: C1, emissive: 1 }); break;

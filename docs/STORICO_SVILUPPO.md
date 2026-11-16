@@ -309,3 +309,9 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - Il selettore mostra ora tutte e tre le modalità: 🏰 Dungeon procedurale, 🌍 Open world, ⚔️ Boss diretto (prima nascondeva Dungeon o Open world in base alla modalità di salvataggio e non aveva il boss diretto).
 - Boss diretto parte SOLO al click: `start()` crea lo scontro con tutto il gruppo; nessun boss in background prima della scelta. "Prossima battaglia" nel risultato ne avvia un altro, "Nuovo party" torna ai salvataggi.
 - Verificato (headless): Boss diretto → battaglia → risultato → Prossima battaglia; Dungeon parte anche con "Comanda 1 eroe". Non verificato: Open world dal selettore dopo la modifica, "Comanda 1 eroe" in Boss diretto, telefoni reali.
+
+## Licenza e texture degli alberi
+- Aggiunto `LICENSE` (MIT) e aggiornata la sezione Licenza del README (i materiali dell'originale restano da verificare).
+- Mondo aperto: gli alberi usano il codice originale (Three.js, shader triplanare con `bark` e `leaf`); nel confronto con l'originale texture e dimensioni immagine sono corrette, quindi non modificato.
+- Arene di battaglia: i prop "albero" erano coni a tinta unita. Ora Mini3D ha una modalità di mappatura triplanare (`tri`) e gli alberi usano le stesse immagini corteccia/foglie dell'originale (tronco + chiome a cono o tonde).
+- Verificato: screenshot di un'arena a tema natura (tronchi con corteccia visibili ai bordi). Non verificato: le chiome intere (la telecamera le taglia), altri temi, dispositivi reali.

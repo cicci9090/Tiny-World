@@ -39,4 +39,4 @@ Funzioni provate in browser headless (le battaglie nascono solo dagli incontri: 
 Il dettaglio di ogni verifica è in [`docs/STORICO_SVILUPPO.md`](docs/STORICO_SVILUPPO.md).
 
 ## Licenza e materiali
-Il gioco originale, i suoi dati e le immagini/texture incorporate (`web/assets.js`, `web/biomeTex.js`, `web/bossAtlas.js`) appartengono all'autore del progetto. **Nessuna licenza è stata scelta**: finché non ne aggiungi una (`LICENSE`), il repository è "tutti i diritti riservati". Se il repository è pubblico, scegli la licenza che vuoi prima di pubblicarlo.
+Il codice è rilasciato con licenza MIT (vedi `LICENSE`). Il gioco originale, i suoi dati e le immagini/texture incorporate (`web/assets.js`, `web/biomeTex.js`, `web/bossAtlas.js`) appartengono all'autore del progetto: la licenza MIT non garantisce diritti di terzi su quei materiali. Verifica di poterli pubblicare prima di rendere pubblico il repository.
