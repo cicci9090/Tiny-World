@@ -320,3 +320,9 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - Bestiario, Spellbook e Grimorio: uguali all'originale (solo il titolo cambia in "Tiny World").
 - Difetto trovato e corretto: nelle Impostazioni del menu mancavano Qualità grafica, Stile grafico, Lanterna notturna, Musica, Effetti sonori e Accessibilità. Causa: `start.html` non definiva `__dbaFSOn`/`__dbaFS` (nell'originale stanno in `script_10`), quindi lo script delle impostazioni si fermava a metà con un errore. Aggiunti gli helper a `start.html`.
 - Verificato: le sezioni compaiono in headless, nessun errore JS. Non verificato: effetto reale di Qualità/Stile/Lanterna/Musica sul gioco, sezioni Effetti sonori e Accessibilità (sotto lo scroll), dispositivi reali.
+
+## Confronto Diario, mappa, inventario nel mondo
+- Diario e mappa: identici all'originale. Nota: la riga "Cavalcatura: nessuna (6 missioni riscosse in $(BN[0]))" mostra un segnaposto non sostituito anche nell'originale (bug originale, lasciato com'è).
+- Inventario: aggiunto il contatore equipaggiati "n/8" per ogni eroe e il testo del vuoto come nell'originale ("Sconfiggi i boss per ottenere equipaggiamento!").
+- Differenze rimaste (cosmetiche, non corrette): l'originale ha la freccia per comprimere le carte degli eroi e icone SVG al posto di alcune emoji; il pannello è una riscrittura (`inventory.js`), non il componente originale.
+- Verificato: screenshot headless dell'inventario nel mondo, nessun errore JS. Non verificato: equipaggiare/togliere oggetti dopo la modifica, dispositivi reali.
