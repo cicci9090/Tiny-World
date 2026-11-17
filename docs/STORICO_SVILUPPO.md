@@ -352,3 +352,8 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 ## Uscita dal dungeon → selettore
 - Verificato (headless): 🚪 nel dungeon riporta al selettore modalità e il Dungeon si rilancia. Trovato un doppione: l'uscita richiamava il ritorno due volte e impilava due selettori; `__reopenPick` ora rimuove quelli già aperti.
 - Non verificato: uscita da dungeon a metà battaglia, PC reale.
+
+## Creazione personaggio: capelli
+- Bug 1: il creatore salvava `hairStyle`/`beardStyle` ma non i flag `hairPick`/`beardPick` che il modello (`wowbuild.js`, codice originale) richiede: i Troll mostravano sempre la cresta e le femmine la barba ignorava la scelta. Ora `hero3d.js` li imposta quando la scelta è esplicita.
+- Bug 2: Gnomo, Pandaren, Tauren e Worgen non hanno capelli nel modello (come nell'originale), ma il creatore mostrava comunque stili e colori che non facevano nulla. Ora per queste razze compare "questa razza non ha capelli" al posto delle opzioni.
+- Verificato (headless): Umano con Lungo, Cresta, Spinoso, Ricci cambia davvero; Troll con Lungo cambia; Tauren mostra il messaggio. Non verificato: tutte le razze × tutti gli stili, la barba, i salvataggi già esistenti (la scelta compare al riaprire il personaggio).

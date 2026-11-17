@@ -97,13 +97,13 @@
     const SW = (col, on) => 'width:30px;height:30px;border-radius:50%;background:' + col + ';border:1px solid rgba(255,255,255,.35);outline:' + (on ? 'rgb(251,191,36) solid 2px' : 'none') + ';cursor:pointer';
     const SEC = (t, b) => '<div style="margin-bottom:12px"><div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(252,211,77,.7);margin-bottom:4px">' + t + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">' + b + '</div></div>';
     function draw() {
-      const A = window.__app(cur()); const R = WOW_RACES[A.race];
+      const A = window.__app(cur()); const R = WOW_RACES[A.race]; const noHairRace = !!(R.gnome || R.panda || R.horns === 2 || R.snout);
       const opts = (arr, sel, f) => arr.map((t, i) => '<button data-f="' + f + '" data-v="' + i + '" style="' + BT(sel === i) + '">' + t + '</button>').join('');
       const sw = (arr, sel, f) => arr.map((cc) => '<button data-f="' + f + '" data-n="' + cc + '" style="' + SW(css(cc), sel === cc) + '"></button>').join('') + '<input type="color" data-ci="' + f + '" value="' + css(sel) + '" style="width:30px;height:30px;border:none;background:none;padding:0">';
       opt.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div><div style="color:#fff;font-weight:600">' + c.icon + ' ' + E(r.name || c.name) + '</div><div style="font-size:11px;color:#94a3b8">' + E(c.name) + ' · ' + R.n + '</div></div><button id="done" style="padding:8px 16px;border-radius:10px;background:linear-gradient(90deg,#f59e0b,#dc2626);color:#fff;font-size:13px;font-weight:600">Fatto</button></div>'
         + SEC('Razza', RACES.map((x, i) => '<button data-f="race" data-v="' + x + '" style="' + BT(A.race === x) + '">' + WOW_RACES[x].n + '</button>').join(''))
         + SEC('Sesso', '<button data-f="sex" data-v="male" style="' + BT(A.sex === 'male') + '">Maschio</button><button data-f="sex" data-v="female" style="' + BT(A.sex === 'female') + '">Femmina</button>')
-        + SEC('Colore pelle', sw(R.skin, A.skinColor, 'skinColor')) + SEC('Capelli', opts(HAIR, A.hairStyle, 'hairStyle')) + SEC('Colore capelli', sw(R.hair, A.hairColor, 'hairColor')) + SEC('Anteprima', '<button id="hh" style="' + BT(hideH) + '">Senza elmo</button>')
+        + SEC('Colore pelle', sw(R.skin, A.skinColor, 'skinColor')) + (noHairRace ? SEC('Capelli', '<span style="font-size:12px;color:#94a3b8">' + R.n + ': questa razza non ha capelli</span>') : SEC('Capelli', opts(HAIR, A.hairStyle, 'hairStyle')) + SEC('Colore capelli', sw(R.hair, A.hairColor, 'hairColor'))) + SEC('Anteprima', '<button id="hh" style="' + BT(hideH) + '">Senza elmo</button>')
         + (A.sex === 'female' ? '' : SEC('Barba', BEARD.map((t, i) => '<button data-f="beardStyle" data-v="' + (i - 1) + '" style="' + BT((A.beardStyle === undefined ? -1 : A.beardStyle) === i - 1) + '">' + t + '</button>').join('')));
       opt.querySelector('#done').onclick = () => { pv && pv.destroy(); o.remove(); save(); showParty(); };
       opt.querySelector('#hh').onclick = () => { hideH = !hideH; draw(); };

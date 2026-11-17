@@ -10,7 +10,7 @@
     const G = { race, sex, skinColor: pk(R.skin, 7), hairColor: pk(R.hair, 11), hairStyle: (k >>> 3) % 8 };
     if (R.eye != null) G.eyeColor = R.eye; G.beardColor = G.hairColor;
     if (R.beard && sex !== 'female') G.beardStyle = 1; else if (sex !== 'female' && (k >>> 9) % 3 === 0) G.beardStyle = (k >>> 13) % 4;
-    for (const f of ['skinColor', 'hairColor', 'hairStyle', 'beardStyle']) if (L[f] !== undefined && L[f] !== null) G[f] = L[f]; if (L.hairColor !== undefined && L.hairColor !== null && L.beardColor === undefined) G.beardColor = L.hairColor; if (sex === 'female' && L.beardStyle === undefined) delete G.beardStyle;
+    for (const f of ['skinColor', 'hairColor', 'hairStyle', 'beardStyle']) if (L[f] !== undefined && L[f] !== null) G[f] = L[f]; if (L.hairColor !== undefined && L.hairColor !== null && L.beardColor === undefined) G.beardColor = L.hairColor; if (sex === 'female' && L.beardStyle === undefined) delete G.beardStyle; if (L.hairStyle !== undefined && L.hairStyle !== null) G.hairPick = 1; if (L.beardStyle !== undefined && L.beardStyle !== null) G.beardPick = 1; /* scelte esplicite dal creatore: senza questi flag Troll (cresta) e Femmine (barba) ignoravano la scelta */
     return G;
   }
   // matrice locale = T * R(order) * S
