@@ -326,3 +326,9 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - Inventario: aggiunto il contatore equipaggiati "n/8" per ogni eroe e il testo del vuoto come nell'originale ("Sconfiggi i boss per ottenere equipaggiamento!").
 - Differenze rimaste (cosmetiche, non corrette): l'originale ha la freccia per comprimere le carte degli eroi e icone SVG al posto di alcune emoji; il pannello è una riscrittura (`inventory.js`), non il componente originale.
 - Verificato: screenshot headless dell'inventario nel mondo, nessun errore JS. Non verificato: equipaggiare/togliere oggetti dopo la modifica, dispositivi reali.
+
+## Stabilità: contesti WebGL in eccesso
+- Misura (Chromium headless, grafica software, 8 s): costi JS simili a quelli dell'originale; l'originale ~1 fps, il nuovo 1-2 fps. Non emerge un collo di bottiglia JS, ma la misura non rappresenta GPU e memoria di un telefono.
+- Differenza reale trovata: nel mondo aperto il nuovo creava 3 contesti WebGL (originale: 1): la scena 3D della battaglia (`#c3`, inutile finché non c'è uno scontro) e un contesto temporaneo usato solo per calcolare l'aspetto degli eroi, mai rilasciato. Sui telefoni i contesti extra consumano memoria e possono causare perdita di contesto/scatti.
+- Corretto: la scena battaglia (`Scene3D`) viene creata al primo scontro (`mkS3()`); il contesto temporaneo viene rilasciato subito (`WEBGL_lose_context`).
+- Verificato: nel mondo aperto restano il contesto del mondo e quello (rilasciato) temporaneo; Boss diretto → risultato → Prossima battaglia; scontro in arena a ondate. Non verificato: miglioramento reale su telefono (non misurabile qui), memoria, riutilizzo della scena battaglia dopo molti scontri.
