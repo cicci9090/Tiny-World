@@ -1,12 +1,15 @@
 <!doctype html><html lang="it"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tiny World — battaglia</title>
-<script>(function(){if(!/[?&]slot=/.test(location.search))return;var H=document.documentElement,seen=0,t0=Date.now(),launch=0;H.classList.add('dba-picking');window.__paused=true;
+<script>(function(){if(!/[?&]slot=/.test(location.search))return;var H=document.documentElement,launch=0;
  document.addEventListener('click',function(e){var t=e.target&&e.target.closest&&e.target.closest('#owb,#dgb');if(t)launch=Date.now()},true);
- var iv=setInterval(function(){var pk=!!document.querySelector('body>[style*="9998"]'),ov=!!document.getElementById('dbaDG');if(pk)seen=1;
-  if(pk)return;
-  if(!seen&&Date.now()-t0<8000)return;
-  if(launch&&!ov&&Date.now()-launch<20000)return;
-  clearInterval(iv);H.classList.remove('dba-picking');window.__paused=false},100)})()</script>
+ /* nasconde la scena finché il selettore modalità è aperto o il mondo/dungeon si sta avviando; richiamabile quando si torna al selettore */
+ window.__pickGuard=function(){var seen=0,t0=Date.now();launch=0;H.classList.add('dba-picking');window.__paused=true;
+  var iv=setInterval(function(){var pk=!!document.querySelector('body>[style*="9998"]'),ov=!!document.getElementById('dbaDG');if(pk)seen=1;
+   if(pk)return;
+   if(!seen&&Date.now()-t0<8000)return;
+   if(launch&&!ov&&Date.now()-launch<20000)return;
+   clearInterval(iv);H.classList.remove('dba-picking');window.__paused=false},100)};
+ window.__pickGuard()})()</script>
 <style>body{margin:0;background:#0b0d14;color:#e8e8f0;font:14px system-ui}#bar{padding:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 #c{display:block;width:100%;height:62vh;min-height:320px;touch-action:none}select,input,button{font:inherit;padding:4px 8px}
 #bar,#pc,#c{display:none!important}
@@ -79,6 +82,8 @@ function appOf(o){/* aspetto stabile (razza, colori, capelli) per eroe: il mondo
  if(a)__APPC.set(key,a);return a}
 function hero0(k,i,L0){const cf=hc[hk(k,i)]||{},L=cf.lv||L0,c=CLASSES[k],r={maxHp:c.maxHp,attack:c.attack,defense:c.defense,isDps:c.arch=='melee'||c.arch=='ranged',isHealer:c.arch=='healer',isTank:c.arch=='tank'};for(let n=1;n<L;n++)levelUpGains(r);return{id:hk(k,i),name:(ROSTER&&ROSTER[i]&&ROSTER[i].name)||c.name,look:ROSTER&&ROSTER[i]&&ROSTER[i].look,classKey:k,className:c.name,icon:c.icon,arch:c.arch,maxHp:r.maxHp,hp:r.maxHp,attack:r.attack,defense:r.defense,alive:true,level:L,xp:cf.xp||0,maxMana:c.maxMana||60,mana:c.maxMana||60,manaRegen:c.manaRegen||2.5,atkSpd:0,_cf:cf,talents:(cf.tal||[0,0,0]).map((v,ti)=>v<0?null:DBA_TAL[c.arch][ti][v].id).filter(Boolean)}}
 function toMenu(){location.href='start.html?screen=slots'}
+/* uscita da mondo/dungeon: torna alla finestra precedente (selettore modalità), non ai salvataggi */
+function toPick(){if(window.__reopenPick)window.__reopenPick();else toMenu()}
 /* Boss diretto: parte SOLO quando si sceglie la modalità dal selettore (o Riprova/Prossimo dal risultato) */
 function start(){const keys=pkeys();if(!keys.length)return;const L=+$('lv').value,heroes=keys.map((k,i)=>hero(k,i,L));window.__paused=false;worldHooks(keys,L);battleCb=null;eng=createEngine(heroes,makeBoss());fx=[];done=false}
 function bar(x,y,w,f,col){cx.fillStyle='#222';cx.fillRect(x-w/2,y,w,5);cx.fillStyle=col;cx.fillRect(x-w/2,y,w*Math.max(0,f),5)}
@@ -122,9 +127,9 @@ function worldHooks(keys,L){window.__dbaGetParty=()=>keys.map((k,i)=>hero(k,i,L)
  window.__dbaOpenInv=()=>invOpen(keys,L);window.__dbaFlush=()=>{};
  window.__dbaGiveXp=A=>{const out=[];keys.forEach((k,i)=>{const HK=hk(k,i),cf=hc[HK]=hc[HK]||{},o=cf.lv||L;let lv=o,xp=(cf.xp||0)+A;while(xp>=DBAEngine.xpForLevel(lv)){xp-=DBAEngine.xpForLevel(lv);lv++}cf.xp=xp;cf.lv=lv;if(lv>o)out.push({name:(ROSTER&&ROSTER[i]&&ROSTER[i].name)||CLASSES[k].name,level:lv})});save();return out}}
 function invOpen(keys,L,onClose){Inventory.open({items:invGet(),party:keys.map((k,i)=>{const c=CLASSES[k],cf=hc[hk(k,i)]||{};return{id:hk(k,i),name:(ROSTER&&ROSTER[i]&&ROSTER[i].name)||c.name,icon:c.icon,className:c.name,classKey:k,level:cf.lv||L,arch:c.arch,isTank:c.arch=='tank'}}),onChange:invSet,onClose:onClose||(()=>{})})}
-$('dgb').onclick=()=>{const keys=pkeys();if(!keys.length)return;const L=+$('lv').value,B=makeBoss(),party=keys.map((k,i)=>hero(k,i,L));window.__paused=false;worldHooks(keys,L);window.DBA_DG(party,B,toMenu,invAdd,k=>sjLoot(keys,0,window.__lootDiff||B.difficulty,k),runBattle,toMenu)};
+$('dgb').onclick=()=>{const keys=pkeys();if(!keys.length)return;const L=+$('lv').value,B=makeBoss(),party=keys.map((k,i)=>hero(k,i,L));window.__paused=false;worldHooks(keys,L);window.DBA_DG(party,B,toPick,invAdd,k=>sjLoot(keys,0,window.__lootDiff||B.difficulty,k),runBattle,toPick)};
 $('owb').onclick=()=>{const keys=pkeys();if(!keys.length)return;const L=+$('lv').value,B=makeBoss(),party=keys.map((k,i)=>hero(k,i,L));window.__paused=false;worldHooks(keys,L);
- window.DBA_OW(party,B,toMenu,invAdd,k=>sjLoot(keys,0,window.__lootDiff||B.difficulty,k),runBattle,toMenu)};
+ window.DBA_OW(party,B,toPick,invAdd,k=>sjLoot(keys,0,window.__lootDiff||B.difficulty,k),runBattle,toPick)};
 $('invb').onclick=()=>{const L=+$('lv').value;Inventory.open({items:invGet(),party:pkeys().map((k,i)=>{const c=CLASSES[k],cf=hc[hk(k,i)]||{};return{id:hk(k,i),name:(ROSTER&&ROSTER[i]&&ROSTER[i].name)||c.name,icon:c.icon,className:c.name,classKey:k,level:cf.lv||L,arch:c.arch,isTank:c.arch=='tank'}}),onChange:invSet,onClose:()=>{renderCfg();start()}})};
 
 $('go').onclick=()=>{if(eng&&eng.over&&battleCb&&!eng.__cb){eng.__cb=1;const e0=eng,cb=battleCb;battleCb=null;cb(e0.outcome,e0.heroes);if(eng===e0)eng=null}};requestAnimationFrame(loop);
@@ -135,6 +140,7 @@ $('go').onclick=()=>{if(eng&&eng.over&&battleCb&&!eng.__cb){eng.__cb=1;const e0=
   ROSTER=d.roster;sel=new Set(ROSTER.map(function(r){return r.k}));renderParty();
   var mb=document.createElement('button');mb.textContent='☰ Menu';mb.title='Torna a salvataggi e party';mb.onclick=function(){location.href='start.html?screen=slots'};var bar=document.getElementById('bar');bar.insertBefore(mb,bar.firstChild);
   var party=ROSTER.map(function(r,i){return hero(r.k,i,+$('lv').value)});
+  window.__reopenPick=function(){eng=null;battleCb=null;if(window.__pickGuard)window.__pickGuard();window.DBA_PICK(function(){$('dgb').click()},function(){document.documentElement.classList.remove('dba-picking');start()},party,function(){$('owb').click()})};
   window.DBA_PICK(function(){$('dgb').click()},function(){document.documentElement.classList.remove('dba-picking');start()},party,function(){$('owb').click()})},400)})();
 </script>
 <script>(function(){var h=document.getElementById('topbtns');if(!h||!window.DBA_TOP)return;DBA_TOP.mount(h,function(){try{return pkeys().map(function(k,i){var id=hk(k,i),c=hc[id]||hc[k]||{},cl=DBAEngine.CLASSES[k];return{id:id,name:(ROSTER&&ROSTER[i]&&ROSTER[i].name)||cl.name,icon:cl.icon,classKey:k,level:c.lv||+document.getElementById('lv').value||1}})}catch(e){return[]}});h.style.display='inline-flex';h.style.gap='6px'})()</script>
