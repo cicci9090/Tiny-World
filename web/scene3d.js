@@ -406,7 +406,7 @@
         if (fl > 0) r.draw('cyl', m.trs(px, .6 * big + y, pz, s.face, .7 * big, 1.2 * big, .7 * big), { color: [1, .2, .1], alpha: fl * .5, emissive: 1 });
       },
       overlay(eng) {
-        const w = overlay.width = canvas.width, h = overlay.height = canvas.height; ctx.clearRect(0, 0, w, h); const d = h / 700;
+        const w = canvas.width, h = canvas.height; if (overlay.width !== w) overlay.width = w; if (overlay.height !== h) overlay.height = h; ctx.clearRect(0, 0, w, h); const d = h / 700;
         const bar = (x, y, bw, f, col) => { ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(x - bw / 2 - 1, y - 1, bw + 2, 7 * d); ctx.fillStyle = col; ctx.fillRect(x - bw / 2, y, bw * Math.max(0, Math.min(1, f)), 5 * d); };
         const b = eng.boss; if (b && b.pos) { const p = r.project(b.pos.x, 6.2, b.pos.z); if (p) { bar(p.x, p.y, 150 * d, b.hp / b.maxHp, '#ef4444'); ctx.fillStyle = '#fff'; ctx.font = `${13 * d}px system-ui`; ctx.textAlign = 'center'; ctx.fillText(`${b.icon || ''} ${b.name || 'Boss'}`, p.x, p.y - 6 * d); } }
         ctx.font = `${12 * d}px system-ui`; ctx.textAlign = 'center';

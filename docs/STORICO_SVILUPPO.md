@@ -332,3 +332,9 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - Differenza reale trovata: nel mondo aperto il nuovo creava 3 contesti WebGL (originale: 1): la scena 3D della battaglia (`#c3`, inutile finché non c'è uno scontro) e un contesto temporaneo usato solo per calcolare l'aspetto degli eroi, mai rilasciato. Sui telefoni i contesti extra consumano memoria e possono causare perdita di contesto/scatti.
 - Corretto: la scena battaglia (`Scene3D`) viene creata al primo scontro (`mkS3()`); il contesto temporaneo viene rilasciato subito (`WEBGL_lose_context`).
 - Verificato: nel mondo aperto restano il contesto del mondo e quello (rilasciato) temporaneo; Boss diretto → risultato → Prossima battaglia; scontro in arena a ondate. Non verificato: miglioramento reale su telefono (non misurabile qui), memoria, riutilizzo della scena battaglia dopo molti scontri.
+
+## Stabilità: lavoro per fotogramma in battaglia
+- Misura (20 eroi, headless): draw call per fotogramma ~516 nel nuovo contro ~794 nell'originale (il rendering 3D non è più pesante). Ma le mutazioni DOM erano ~200/s a 2.4 fps (≈85 per fotogramma) contro ~5/s dell'originale: a 60 fps sarebbero migliaia al secondo, un peso reale su telefoni.
+- Corretto: `hud.js` scrive nel DOM solo quando il valore cambia (larghezze barre, testi, tooltip, sfondi delle icone ultimate); `scene3d.js` non riassegna più `width`/`height` della canvas overlay a ogni fotogramma (riassegnarla svuota e rialloca la canvas).
+- Risultato: mutazioni DOM ~90/s (da ~200/s) a parità di fps. Il resto sono barre e testi che cambiano davvero.
+- Verificato: Boss diretto → risultato → Prossima battaglia, battaglia mobile verticale con HUD aggiornato. Non verificato: miglioramento percepibile su un telefono vero.
