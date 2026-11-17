@@ -315,3 +315,8 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - Mondo aperto: gli alberi usano il codice originale (Three.js, shader triplanare con `bark` e `leaf`); nel confronto con l'originale texture e dimensioni immagine sono corrette, quindi non modificato.
 - Arene di battaglia: i prop "albero" erano coni a tinta unita. Ora Mini3D ha una modalità di mappatura triplanare (`tri`) e gli alberi usano le stesse immagini corteccia/foglie dell'originale (tronco + chiome a cono o tonde).
 - Verificato: screenshot di un'arena a tema natura (tronchi con corteccia visibili ai bordi). Non verificato: le chiome intere (la telecamera le taglia), altri temi, dispositivi reali.
+
+## Confronto Bestiario / Spellbook / Grimorio / Impostazioni
+- Bestiario, Spellbook e Grimorio: uguali all'originale (solo il titolo cambia in "Tiny World").
+- Difetto trovato e corretto: nelle Impostazioni del menu mancavano Qualità grafica, Stile grafico, Lanterna notturna, Musica, Effetti sonori e Accessibilità. Causa: `start.html` non definiva `__dbaFSOn`/`__dbaFS` (nell'originale stanno in `script_10`), quindi lo script delle impostazioni si fermava a metà con un errore. Aggiunti gli helper a `start.html`.
+- Verificato: le sezioni compaiono in headless, nessun errore JS. Non verificato: effetto reale di Qualità/Stile/Lanterna/Musica sul gioco, sezioni Effetti sonori e Accessibilità (sotto lo scroll), dispositivi reali.
