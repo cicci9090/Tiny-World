@@ -40,7 +40,7 @@ html.dba-picking body>*:not([style*="9998"]):not(#dbaDG){visibility:hidden!impor
  new MutationObserver(function(){var m=[...bar.children].find(function(x){return /Menu/.test(x.textContent)&&x.tagName=='BUTTON'&&x.id!='barT'});if(m)m.classList.add('keep')}).observe(bar,{childList:true})})()</script>
 <script src="music.js"></script><script>
 (function(){var $=function(i){return document.getElementById(i)};function M(){return window.DBA_MUS&&window.DBA_MUS()}
- function info(){var m=M();if(!m)return;try{var t=m.getTrackInfo&&m.getTrackInfo();$('mut').textContent=m.isPlaying()?('♪ '+((t&&t.name)||'')):''; $('mub').style.opacity=m.isPlaying()?1:.6;$('mub').title=m.isPlaying()?'Pausa':'Riproduci';var mu=m.isMuted();$('mum').textContent=(mu||m.getVolume()===0)?'🔇':'🔊';$('mum').title=mu?'Riattiva audio':'Muta'}catch(e){}}
+ function info(){var m=M();if(!m)return;try{var t=m.getTrackInfo&&m.getTrackInfo();var sig=[m.isPlaying(),t&&t.name,m.isMuted(),m.getVolume()].join('|');if(info._s===sig)return;info._s=sig;$('mut').textContent=m.isPlaying()?('♪ '+((t&&t.name)||'')):''; $('mub').style.opacity=m.isPlaying()?1:.6;$('mub').title=m.isPlaying()?'Pausa':'Riproduci';var mu=m.isMuted();$('mum').textContent=(mu||m.getVolume()===0)?'🔇':'🔊';$('mum').title=mu?'Riattiva audio':'Muta'}catch(e){}}
  document.addEventListener('DOMContentLoaded',function(){var m=M();try{var v=parseFloat(localStorage.getItem('dbaNextMusVol'));if(!isNaN(v)){$('muv').value=v;m.setVolume(v)}}catch(e){}
   $('mub').onclick=function(){var m=M();m.init();m.isPlaying()?m.pause():m.play();info()};
   $('mup').onclick=function(){var m=M();m.init();m.prev();if(!m.isPlaying())m.play();info()};

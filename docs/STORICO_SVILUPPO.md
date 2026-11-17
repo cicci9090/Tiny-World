@@ -338,3 +338,7 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - Corretto: `hud.js` scrive nel DOM solo quando il valore cambia (larghezze barre, testi, tooltip, sfondi delle icone ultimate); `scene3d.js` non riassegna più `width`/`height` della canvas overlay a ogni fotogramma (riassegnarla svuota e rialloca la canvas).
 - Risultato: mutazioni DOM ~90/s (da ~200/s) a parità di fps. Il resto sono barre e testi che cambiano davvero.
 - Verificato: Boss diretto → risultato → Prossima battaglia, battaglia mobile verticale con HUD aggiornato. Non verificato: miglioramento percepibile su un telefono vero.
+
+## Stabilità: mondo aperto
+- Misura: mutazioni DOM nel mondo aperto ~1/s nell'originale, ~7/s nel nuovo (il lettore musicale riscriveva testi e stili ad ogni controllo anche se invariati). Ora scrive solo se lo stato cambia: ~2/s.
+- Verificato: misura headless dopo la modifica. Non verificato: pulsanti musica in uso reale.
