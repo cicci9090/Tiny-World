@@ -348,3 +348,7 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - **Rinascita.** Bug: la finestra "Il party è caduto" aveva solo "Risorgi al campo": la ✕ (o Esc) la chiudeva e il party restava morto con il mondo in pausa. Ora ✕ ed Esc risorgono come il pulsante. Inoltre il party rinasce al più vicino tra i campi aperti **o già raggiunti** (`Q.vc`, registrati quando ci si avvicina a meno di 150 unità; salvati nel salvataggio); prima contavano solo i campi con l'uscita aperta.
 - **Blocchi a tratti.** Non riprodotti: il salvataggio ogni 5 s costa ~0,5 ms, il profilo JS del mondo è equivalente a quello dell'originale (stesso codice Three.js), nessun lavoro periodico pesante. Restano ipotesi non verificate: caricamento iniziale di ~6 MB compressi (`assets.js` 5,4 MB), GPU/driver del PC, cache del browser.
 - Verificato (headless): ✕ sul modale Continua/Nuovo mondo → selettore; sconfitta reale in battaglia nel mondo → Continua → Risorgi, anche con ✕/Esc; rinascita al campo 1 dopo averlo visitato. Non verificato: PC reale, uscita da dungeon con il nuovo ritorno al selettore, partite salvate già esistenti (senza `Q.vc`).
+
+## Uscita dal dungeon → selettore
+- Verificato (headless): 🚪 nel dungeon riporta al selettore modalità e il Dungeon si rilancia. Trovato un doppione: l'uscita richiamava il ritorno due volte e impilava due selettori; `__reopenPick` ora rimuove quelli già aperti.
+- Non verificato: uscita da dungeon a metà battaglia, PC reale.

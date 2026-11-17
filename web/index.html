@@ -140,7 +140,7 @@ $('go').onclick=()=>{if(eng&&eng.over&&battleCb&&!eng.__cb){eng.__cb=1;const e0=
   ROSTER=d.roster;sel=new Set(ROSTER.map(function(r){return r.k}));renderParty();
   var mb=document.createElement('button');mb.textContent='☰ Menu';mb.title='Torna a salvataggi e party';mb.onclick=function(){location.href='start.html?screen=slots'};var bar=document.getElementById('bar');bar.insertBefore(mb,bar.firstChild);
   var party=ROSTER.map(function(r,i){return hero(r.k,i,+$('lv').value)});
-  window.__reopenPick=function(){eng=null;battleCb=null;if(window.__pickGuard)window.__pickGuard();window.DBA_PICK(function(){$('dgb').click()},function(){document.documentElement.classList.remove('dba-picking');start()},party,function(){$('owb').click()})};
+  window.__reopenPick=function(){document.querySelectorAll('body>[style*="9998"]').forEach(function(x){x.remove()});eng=null;battleCb=null;if(window.__pickGuard)window.__pickGuard();window.DBA_PICK(function(){$('dgb').click()},function(){document.documentElement.classList.remove('dba-picking');start()},party,function(){$('owb').click()})};
   window.DBA_PICK(function(){$('dgb').click()},function(){document.documentElement.classList.remove('dba-picking');start()},party,function(){$('owb').click()})},400)})();
 </script>
 <script>(function(){var h=document.getElementById('topbtns');if(!h||!window.DBA_TOP)return;DBA_TOP.mount(h,function(){try{return pkeys().map(function(k,i){var id=hk(k,i),c=hc[id]||hc[k]||{},cl=DBAEngine.CLASSES[k];return{id:id,name:(ROSTER&&ROSTER[i]&&ROSTER[i].name)||cl.name,icon:cl.icon,classKey:k,level:c.lv||+document.getElementById('lv').value||1}})}catch(e){return[]}});h.style.display='inline-flex';h.style.gap='6px'})()</script>
