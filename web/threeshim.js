@@ -58,7 +58,7 @@
     ws = Math.max(3, Math.floor(ws)); hs = Math.max(2, Math.floor(hs)); const P = [], N = [], I = [], U = [], grid = [], te = ts + tl;
     for (let y = 0; y <= hs; y++) { const row = [], v = y / hs; for (let x = 0; x <= ws; x++) { const u = x / ws, X = -r * Math.cos(ps + u * pl) * Math.sin(ts + v * tl), Y = r * Math.cos(ts + v * tl), Z = r * Math.sin(ps + u * pl) * Math.sin(ts + v * tl); P.push(X, Y, Z); U.push(u, 1 - v); const l = Math.hypot(X, Y, Z) || 1; N.push(X / l, Y / l, Z / l); row.push(P.length / 3 - 1); } grid.push(row); }
     for (let y = 0; y < hs; y++) for (let x = 0; x < ws; x++) { const a = grid[y][x + 1], b = grid[y][x], c = grid[y + 1][x], d = grid[y + 1][x + 1]; if (y !== 0 || ts > 0) I.push(a, b, d); if (y !== hs - 1 || te < Math.PI) I.push(b, c, d); }
-    return build(P, N, I, U);
+    const g = build(P, N, I, U); g.parameters = { radius: r }; return g;
   }
   function Cyl(rt = 1, rb = 1, h = 1, rs = 8, hs = 1) {
     rs = Math.max(3, Math.floor(rs)); const P = [], N = [], I = [], U = [], grid = [], slope = (rb - rt) / h;
@@ -66,17 +66,17 @@
     for (let x = 0; x < rs; x++) for (let y = 0; y < hs; y++) { const a = grid[y][x], b = grid[y + 1][x], c = grid[y + 1][x + 1], d = grid[y][x + 1]; if (rt > 0 || y !== 0) I.push(a, b, d); if (rb > 0 || y !== hs - 1) I.push(b, c, d); }
     for (const top of [true, false]) { const rad = top ? rt : rb; if (rad <= 0) continue; const y = top ? h / 2 : -h / 2, ny = top ? 1 : -1, c0 = P.length / 3; P.push(0, y, 0); N.push(0, ny, 0); U.push(.5, .5);
       for (let x = 0; x <= rs; x++) { const th = x / rs * Math.PI * 2; P.push(rad * Math.sin(th), y, rad * Math.cos(th)); N.push(0, ny, 0); U.push(Math.sin(th) * .5 + .5, Math.cos(th) * .5 * ny + .5); } for (let x = 0; x < rs; x++) I.push(c0, c0 + x + 1, c0 + x + 2); }
-    return build(P, N, I, U);
+    const g = build(P, N, I, U); g.parameters = { height: h }; return g;
   }
   function Box(w = 1, h = 1, d = 1) {
     const P = [], N = [], I = [], U = [], F = [[[0, 0, 1], [1, 0, 0], [0, 1, 0]], [[0, 0, -1], [-1, 0, 0], [0, 1, 0]], [[1, 0, 0], [0, 0, -1], [0, 1, 0]], [[-1, 0, 0], [0, 0, 1], [0, 1, 0]], [[0, 1, 0], [1, 0, 0], [0, 0, -1]], [[0, -1, 0], [1, 0, 0], [0, 0, 1]]];
     for (const [n, u, v] of F) { const b = P.length / 3; for (const [a, c] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { P.push((n[0] + u[0] * a + v[0] * c) * .5 * w, (n[1] + u[1] * a + v[1] * c) * .5 * h, (n[2] + u[2] * a + v[2] * c) * .5 * d); N.push(n[0], n[1], n[2]); U.push((a + 1) / 2, (c + 1) / 2); } I.push(b, b + 1, b + 2, b, b + 2, b + 3); }
-    return build(P, N, I, U);
+    const g = build(P, N, I, U); g.parameters = { height: h }; return g;
   }
   function Poly(V, Fc, r, detail) {
     const nrm = (p) => { const l = Math.hypot(...p); return p.map((x) => x / l * r); }; let tris = Fc.map((f) => f.map((i) => nrm(V[i])));
     for (let k = 0; k < detail; k++) { const o = []; for (const [a, b, c] of tris) { const ab = nrm(a.map((x, i) => x + b[i])), bc = nrm(b.map((x, i) => x + c[i])), ca = nrm(c.map((x, i) => x + a[i])); o.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]); } tris = o; }
-    return flat(tris);
+    const g = flat(tris); g.parameters = { radius: r }; return g;
   }
   const PHI = (1 + Math.sqrt(5)) / 2;
   const IV = [[-1, PHI, 0], [1, PHI, 0], [-1, -PHI, 0], [1, -PHI, 0], [0, -1, PHI], [0, 1, PHI], [0, -1, -PHI], [0, 1, -PHI], [PHI, 0, -1], [PHI, 0, 1], [-PHI, 0, -1], [-PHI, 0, 1]];

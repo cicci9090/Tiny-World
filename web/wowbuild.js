@@ -1,4 +1,4 @@
-// Costruttore dei modelli eroe — testo ORIGINALE del gioco (WOW_build), non modificato.
+// Costruttore dei modelli eroe — testo dell'originale (WOW_build), esteso: capelli per tutte le razze, 18 stili di capelli e 12 di barba.
 function WOW_build(T,A,pv){
  var G=A.appearance||{};
  if(!G.race||!WOW_RACES[G.race]){
@@ -23,7 +23,7 @@ function WOW_build(T,A,pv){
   steel=C(CL.dark?3815994:(CL.stone?9139029:11975116)),steelD=C(CL.dark?1710624:5326430),
   gold=C(15246657),wood=C(7029795),leath=C(7036462),leathD=C(4010514),bone=C(14078648),ivory=C(15724490),dark=C(1118481),
   plate=CL.arm==="plate",bare=CL.arm==="bare",cloth=CL.arm==="cloth",leather=CL.arm==="leather",
-  bw=Math.max(.8,Math.min(1.3,G.widthMul||1))*(A.form==="tank"?1.1:1)*(W?.92:1),
+  bw=Math.max(.8,Math.min(1.3,G.widthMul||1))*(A.form==="tank"?1.1:1)*(W?.92:1)*.88,
   hun=R.hunch||0,
   armCol=plate?steel:(cloth?sh(cls,.8):(leather?leathD:skin)),
   metal=plate?(CL.gold?gold:steel):steel,
@@ -41,7 +41,7 @@ function WOW_build(T,A,pv){
  if(NK){if(!ia){plate=cloth=leather=mail=false;bare=true;ROBE=0;armCol=skin;if(!ISH)PA="none"}if(!ih){hsk=null;hm="none"}if(!OFH)CSH=null}
  if(A.hideHelm){hsk=null;hm="none"}
  var AFL=false,LGT=null;function add(B,geo,col,p,r,s,glow){(glow?B.g:B.l).push({geo:geo,col:col,p:p||[0,0,0],r:r,s:s,ox:B.ox,oy:B.oy,oz:B.oz,k:B.k,fa:AFL,lg:LGT})}
- var hk=.4*R.hd+.08,hy=1.1+.32*R.hd-hun*.5,hz=hun;
+ var hk=.4*R.hd+.08,hy=1.1+.32*R.hd-hun*.5+.3,hz=hun;
  head.ox=0;head.oy=hy;head.oz=hz;head.k=R.hd;
  // ---------- LEGS ----------
  var lx=.18*bw,pandaLim=R.panda?dark:null;
@@ -240,6 +240,8 @@ function WOW_build(T,A,pv){
  var skullC=R.skeleton?C(11315829):skin;
  var fur=R.fur&&!R.panda?C(furC):skullC;
  if(R.panda){skullC=C(16118250);fur=skullC}
+ var neckC=R.skeleton?bone:(R.panda?skullC:(R.fur?C(furC):skin)),nkTop=hy-.1*R.hd,nkBot=1.1;
+ add(stat,Cy(.15*Math.min(1.25,R.hd),.19*Math.min(1.25,R.hd),nkTop-nkBot,8),neckC,[0,(nkTop+nkBot)/2,hz*.6]);
  add(hs,S(.4,R.gnome?10:7,R.gnome?8:5),fur,[0,0,0],0,R.gnome?[1.03,1.05,1]:[1,1.04,.96]);DBA_LEGO&&add(hs,Cy(.13,.13,.1,10),fur,[0,.37,0]);
  if(R.jaw||R.tusks){add(hs,Bx(.5,.16,.3),skullC,[0,-.26,.18])}
  if(R.skeleton){add(hs,Bx(.36,.14,.24),bone,[0,-.27,.2]);for(var tt=-2;tt<=2;tt++)add(hs,Bx(.04,.05,.02),ivory,[tt*.07,-.2,.33])}
@@ -280,8 +282,21 @@ function WOW_build(T,A,pv){
   if(G.sex!=="female"){for(var t3=-1;t3<=1;t3+=2)for(var t4=0;t4<2;t4++)add(hs,Co(.03,.28,3),C(6950880),[t3*(.08+t4*.08),-.4,.18],[PI,0,t3*.2])}}
  if(R.horns===2){for(var h2=-1;h2<=1;h2+=2){add(hs,Co(.07,.4,5),ivory,[h2*.34,.28,.04],[0,0,-h2*1.0]);add(hs,Co(.05,.28,4),ivory,[h2*.58,.5,.04],[0,0,h2*.3])}}
  if(R.panda===undefined&&R.fur&&R.tail==="fur")add(hs,Co(.2,.3,5),fur,[0,.38,-.12],[-.4,0,0]);
+
+ // anti-intersezione: accorcia (comprime in verticale) i pezzi appesi sotto 'anchor' perché il fondo non scenda sotto L (coordinate locali testa)
+ function fitHang(arr,n0,anchor,L,pred){
+  var P=[],i,q,g,h,sy,minB=1e9;
+  for(i=n0;i<arr.length;i++){q=arr[i];if(!q.geo||(pred&&!pred(q)))continue;g=q.geo.parameters||{};sy=q.s&&q.s.length?q.s[1]:1;h=g.height;
+   var ext=h?h*sy/2:(g.radius?g.radius*sy:0);P.push(q);minB=Math.min(minB,q.p[1]-ext)}
+  if(minB>=L||!P.length)return;
+  var f=(anchor-L)/(anchor-minB);
+  P.forEach(function(q){var g=q.geo.parameters||{},h=g.height,sy=q.s&&q.s.length?q.s[1]:1,y=q.p[1];
+   function m(v){return v<anchor?anchor+(v-anchor)*f:v}
+   if(h){var tp=m(y+h*sy/2),bt=m(y-h*sy/2),ns=(tp-bt)/h;q.s=q.s&&q.s.length?[q.s[0],ns,q.s[2]]:[1,ns,1];q.p=[q.p[0],(tp+bt)/2,q.p[2]]}
+   else q.p=[q.p[0],m(y),q.p[2]]})}
+ var hdLow=function(){return (.97-hy)/R.hd};
  // hair
- var hstyle=R.mohawk&&!G.hairPick?3:(G.hairStyle||0),noHair=R.gnome||hm==="hood"||hm==="helmet"||hm==="winged"||hm==="crest"||R.panda||R.horns===2||R.snout;
+ var hstyle=R.mohawk&&!G.hairPick?3:(G.hairStyle||0),noHair=hm==="hood"||hm==="helmet"||hm==="winged"||hm==="crest"||hm==="horned"||hm==="veil"||hm==="hat",hn0=hs.l.length,hr=(noHair||hstyle===4)?1:1.16;
  if(!noHair){
   var hh=hair.clone().lerp(C(6053478),.15),HC=function(tl,bk){add(hs,S(.46,8,5,0,PI*2,0,PI*tl),hh,[0,.05,-.02],0,[1,1.05,1.05]);add(hs,S(.47,8,5,PI,PI,0,PI*bk),hh,[0,.03,-.02],0,[1,1.05,1.05])};
   switch(hstyle){
@@ -292,16 +307,37 @@ function WOW_build(T,A,pv){
    case 4:break;
    case 5:HC(.3,.5);for(var sp=0;sp<8;sp++){var sa2=sp/8*PI*2;add(hs,Co(.08,.32,3),hh,[Math.cos(sa2)*.27,.4,Math.sin(sa2)*.27],[Math.sin(sa2)*.6,0,-Math.cos(sa2)*.6])}break;
    case 6:for(var cu=0;cu<8;cu++){var ca=PI+cu/7*PI;add(hs,Oc(.17),hh,[Math.cos(ca)*.34,.1+(cu%2)*.14,Math.sin(ca)*.3-.02])}HC(.34,.5);add(hs,Oc(.17),hh,[0,.42,0]);add(hs,Oc(.15),hh,[.2,.38,.05]);add(hs,Oc(.15),hh,[-.2,.38,.05]);break;
-   default:HC(.36,.62);for(var bs2=-1;bs2<=1;bs2+=2){add(hs,Cy(.06,.04,.35,4),hh,[bs2*.4,-.2,-.02]);add(hs,Cy(.05,.03,.3,4),hh,[bs2*.4,-.5,-.02]);add(hs,Ic(.06),hh,[bs2*.4,-.68,-.02])}}} else if(!R.snout&&!R.gnome&&hstyle!==4){var hh2=hair,lg=(hstyle===1||hstyle===2||hstyle===7)?.55:.3;add(hs,Bx(.62,lg,.12),hh2,[0,-.12-lg/3,-.36]);add(hs,Bx(.09,lg*.8,.14),hh2,[-.4,-.12,.02]);add(hs,Bx(.09,lg*.8,.14),hh2,[.4,-.12,.02]);if(hstyle===2)add(hs,Cy(.07,.05,.5,4),hh2,[0,-.3,-.44],[.5,0,0]);if(hstyle===7){add(hs,Cy(.04,.03,.5,4),hh2,[-.14,-.4,-.4]);add(hs,Cy(.04,.03,.5,4),hh2,[.14,-.4,-.4])}}
+   case 8:HC(.36,.6);add(hs,Ic(.17),hh,[0,.52,-.1]);add(hs,Cy(.1,.1,.06,6),hh,[0,.42,-.08]);break;
+   case 9:HC(.36,.68);add(hs,Bx(.12,.42,.46),hh,[-.4,-.14,.02]);add(hs,Bx(.12,.42,.46),hh,[.4,-.14,.02]);add(hs,Bx(.8,.5,.12),hh,[0,-.2,-.4]);add(hs,Bx(.5,.07,.08),hh,[0,.3,.34],[.35,0,0]);break;
+   case 10:HC(.36,.6);add(hs,Bx(.56,.12,.16),hh,[.08,.3,.32],[.5,0,.3]);add(hs,Bx(.14,.5,.12),hh,[-.38,-.06,.2]);add(hs,Bx(.12,.34,.5),hh,[.42,-.02,-.04]);break;
+   case 11:add(hs,S(.66,8,6),hh,[0,.16,-.06],0,[1,.95,1]);break;
+   case 12:HC(.36,.6);for(var tw=-1;tw<=1;tw+=2){add(hs,Ic(.1),hh,[tw*.4,.4,-.1]);add(hs,Cy(.09,.05,.6,5),hh,[tw*.46,.08,-.12],[0,0,tw*.12]);add(hs,Ic(.07),hh,[tw*.48,-.24,-.12])}break;
+   case 13:HC(.2,.4);add(hs,Bx(.15,.2,.62),hh,[0,.47,-.04]);add(hs,Bx(.12,.14,.18),hh,[0,.52,.3],[.3,0,0]);break;
+   case 14:HC(.36,.62);add(hs,Bx(.52,.3,.36),hh,[0,.5,.14],[.4,0,0]);add(hs,Bx(.3,.18,.3),hh,[0,.6,.02]);break;
+   case 15:HC(.36,.62);add(hs,Ic(.1),hh,[0,-.08,-.5]);add(hs,Ic(.1),hh,[0,-.3,-.55]);add(hs,Ic(.09),hh,[0,-.52,-.58]);add(hs,Ic(.08),hh,[0,-.72,-.6]);add(hs,Ic(.06),hh,[0,-.9,-.61]);break;
+   case 16:HC(.34,.55);for(var sv=0;sv<11;sv++){var sa3=sv/11*PI*2,sr=.12+(sv%3)*.1;add(hs,Co(.09,.34+(sv%4)*.08,3),hh,[Math.cos(sa3)*sr*2.2,.42+(sv%3)*.05,Math.sin(sa3)*sr*2],[Math.sin(sa3)*.8,0,-Math.cos(sa3)*.8])}break;
+   case 17:HC(.34,.55);for(var cr=0;cr<9;cr++){var ca2=cr/9*PI*2;add(hs,Ic(.075),hh,[Math.cos(ca2)*.4,.34,Math.sin(ca2)*.38-.02])}add(hs,Ic(.12),hh,[0,.5,-.02]);break;
+   default:HC(.36,.62);for(var bs2=-1;bs2<=1;bs2+=2){add(hs,Cy(.06,.04,.35,4),hh,[bs2*.4,-.2,-.02]);add(hs,Cy(.05,.03,.3,4),hh,[bs2*.4,-.5,-.02]);add(hs,Ic(.06),hh,[bs2*.4,-.68,-.02])}}} else if(!R.snout&&!R.gnome&&hstyle!==4&&hm!=="hat"&&hm!=="veil"&&hm!=="horned"){var hh2=hair,lg=(hstyle===1||hstyle===2||hstyle===7)?.55:.3;add(hs,Bx(.62,lg,.12),hh2,[0,-.16-lg/2,-.43]);if(hstyle===2)add(hs,Cy(.07,.05,.5,4),hh2,[0,-.3,-.44],[.5,0,0]);if(hstyle===7){add(hs,Cy(.04,.03,.5,4),hh2,[-.14,-.4,-.4]);add(hs,Cy(.04,.03,.5,4),hh2,[.14,-.4,-.4])}}
+ if(!noHair){var hL=hdLow();fitHang(hs.l,hn0,-.05,-.3,function(q){return Math.abs(q.p[0])>.3});fitHang(hs.l,hn0,-.2,Math.max(hL-.1,-.8),function(q){return Math.abs(q.p[0])<=.3});for(var hi=hn0;hi<hs.l.length;hi++){var hq=hs.l[hi],hg=hq.geo&&hq.geo.parameters;if(hq.p[2]<-.25&&hq.p[1]<.1)hq.p=[hq.p[0],hq.p[1],hq.p[2]-.08];if(Math.abs(hq.p[0])>.3&&hg&&hg.height>.25){var hsc=hq.s&&hq.s.length?hq.s:[1,1,1];hq.s=[hsc[0]*.7,hsc[1],hsc[2]*.75]}}}
  // beard
- if((G.sex!=="female"||G.beardPick)&&(G.beardStyle>=0||R.gnome)&&!R.snout){
-  var bc=C(G.beardColor||G.hairColor||1710618);
-  switch(R.gnome?9:(R.beard?1:G.beardStyle)){
-   case 9:add(hs,Co(.34,.5,7),bc,[0,-.42,.12],[PI,0,0],[1,1,.62]);add(hs,Co(.24,.5,6),bc,[0,-.58,.24],[PI,0,0],[1,1,.5]);add(hs,S(.1,6,4),bc,[-.09,-.13,.37],0,[1.5,.6,.8]);add(hs,S(.1,6,4),bc,[.09,-.13,.37],0,[1.5,.6,.8]);break;
-   case 0:add(hs,Co(.07,.18,4),bc,[0,-.38,.28],[PI,0,0]);break;
-   case 1:add(hs,Co(.3,R.beard?.7:.45,6),bc,[0,-.55,.14],[PI,0,0],[1,1,.6]);break;
-   case 2:add(hs,Bx(.12,.03,.04),bc,[-.07,-.12,.38],[0,0,.2]);add(hs,Bx(.12,.03,.04),bc,[.07,-.12,.38],[0,0,-.2]);break;
-   default:add(hs,S(.25,6,4,0,PI*2,PI*.45,PI*.4),bc,[0,-.3,.05],0,[1,.5,.8])}}
+ var bn0=hs.l.length;
+ var bst=G.beardPick?G.beardStyle:(R.gnome?9:(R.beard?1:G.beardStyle)),bz=R.snout?.2*(R.snout>1?1.4:1):0;
+ if((G.sex!=="female"||G.beardPick)&&bst>=0&&(G.beardPick||!R.snout)){
+  var bc=C(G.beardColor||G.hairColor||1710618),FB=function(sx,len,yTop,x,zo){add(hs,S(.3,8,6),bc,[x||0,yTop-len/2,.35+bz+(zo||0)],[-.2,0,0],[sx,len/.6,.16])};
+  switch(bst){
+   case 9:FB(1.15,.55,-.2);FB(.8,.5,-.45,0,.02);add(hs,S(.1,6,4),bc,[-.09,-.13,.37],0,[1.5,.6,.8]);add(hs,S(.1,6,4),bc,[.09,-.13,.37],0,[1.5,.6,.8]);break;
+   case 0:FB(.3,.16,-.28);break;
+   case 1:FB(1,R.beard?.7:.45,-.2);break;
+   case 2:add(hs,Bx(.12,.03,.04),bc,[-.07,-.12,.38+bz],[0,0,.2]);add(hs,Bx(.12,.03,.04),bc,[.07,-.12,.38+bz],[0,0,-.2]);break;
+   case 4:FB(.95,.9,-.2);add(hs,S(.22,6,4,0,PI*2,PI*.45,PI*.4),bc,[0,-.3,.08+bz],0,[1,.5,.8]);break;
+   case 5:FB(.28,.5,-.2,0,.03);add(hs,Bx(.12,.03,.04),bc,[-.07,-.12,.38+bz],[0,0,.2]);add(hs,Bx(.12,.03,.04),bc,[.07,-.12,.38+bz],[0,0,-.2]);break;
+   case 6:add(hs,Bx(.07,.34,.1),bc,[-.42,-.08,.14]);add(hs,Bx(.07,.34,.1),bc,[.42,-.08,.14]);break;
+   case 7:add(hs,Bx(.07,.34,.1),bc,[-.42,-.08,.14]);add(hs,Bx(.07,.34,.1),bc,[.42,-.08,.14]);add(hs,S(.3,6,4,0,PI*2,PI*.5,PI*.35),bc,[0,-.34,.08+bz],0,[1,.5,.9]);break;
+   case 8:add(hs,Bx(.2,.035,.05),bc,[-.12,-.12,.38+bz],[0,0,-.25]);add(hs,Bx(.2,.035,.05),bc,[.12,-.12,.38+bz],[0,0,.25]);add(hs,Co(.03,.14,4),bc,[-.26,-.07,.38+bz],[0,0,-.9]);add(hs,Co(.03,.14,4),bc,[.26,-.07,.38+bz],[0,0,.9]);break;
+   case 10:add(hs,S(.22,6,4,0,PI*2,PI*.45,PI*.4),bc,[0,-.3,.08+bz],0,[1,.5,.8]);FB(.5,.7,-.2,-.1);FB(.5,.7,-.2,.1,.01);break;
+   case 11:add(hs,S(.34,7,5,0,PI*2,PI*.4,PI*.5),bc,[0,-.3,.08+bz],0,[1.15,1.2,1]);FB(1.1,.45,-.2);add(hs,Bx(.14,.1,.1),bc,[-.36,-.1,.1]);add(hs,Bx(.14,.1,.1),bc,[.36,-.1,.1]);break;
+   default:add(hs,S(.25,6,4,0,PI*2,PI*.45,PI*.4),bc,[0,-.3,.05+bz],0,[1,.5,.8])}}
+ {var bL=Math.max(hdLow(),-.7);if(bL>-.45)bL=-.45;fitHang(hs.l,bn0,-.3,bL);for(var bi=bn0;bi<hs.l.length;bi++){var bq=hs.l[bi];if(bq.p[1]<-.3&&bq.p[2]<.5)bq.p=[bq.p[0],bq.p[1],bq.p[2]+.015]}}
  if(R.mohawk&&hm==="hood"){}
  // helmets / headgear
  if(hsk){steel=hsk.p;steelD=sh(hsk.p,.55);c2=hsk.s;if(hsk.t>=1)gold=hsk.acc;if(hsk.t>=2)add(hs,Oc(.06),hsk.acc,[0,.2,.41],0,[1,1.3,.6],1);if(hsk.t>=3)add(hs,Cy(.36,.36,.02,12),hsk.acc,[0,.66,-.05],0,0,1);if(hsk.t>=4)for(var fl=-1;fl<=1;fl++)add(hs,Co(.05,.28,3),hsk.acc,[fl*.14,.62,-.05],[0,0,-fl*.3],0,1)}
@@ -312,7 +348,7 @@ function WOW_build(T,A,pv){
   else add(hs,Co(.06,.2,4),steelD,[0,.52,0]);
   if(hm==="crest")add(hs,Bx(.08,.4+(hsk?hsk.h%20/100:0),.8),hsk?hsk.s:C(13369344),[0,.58,-.05]);
   if(hm==="winged")for(var wg=-1;wg<=1;wg+=2)for(var wf=0;wf<3;wf++)add(hs,Co(.07,.5-wf*.08,3),ivory,[wg*(.44+wf*.05),.28-wf*.06,-.02],[0,0,-wg*(1.1+wf*.2)],[1,1,.4])}
- else if(hm==="crown"||hm==="thorn"){var ns=hm==="thorn"?8:3+(hsk?hsk.h%5:2);add(hs,Cy(.4,.42,.12,8),hm==="thorn"?steelD:gold,[0,.26,0]);for(var cs=0;cs<ns;cs++){var ca2=cs/ns*PI*2;add(hs,Co(hm==="thorn"?.035:.06,hm==="thorn"?.3:.2,hm==="thorn"?3:4),hm==="thorn"?steelD:gold,[Math.cos(ca2)*.38,.4,Math.sin(ca2)*.38],[Math.sin(ca2)*(hm==="thorn"?.7:.15),0,-Math.cos(ca2)*(hm==="thorn"?.7:.15)])}if(hm==="crown")add(hs,Oc(.07),hsk?hsk.acc:wGlow,[0,.3,.42],0,[1,1.3,.6],1)}
+ else if(hm==="crown"||hm==="thorn"){var ns=hm==="thorn"?8:3+(hsk?hsk.h%5:2);add(hs,Cy(.4*hr,.42*hr,.12,8),hm==="thorn"?steelD:gold,[0,.26,0]);for(var cs=0;cs<ns;cs++){var ca2=cs/ns*PI*2;add(hs,Co(hm==="thorn"?.035:.06,hm==="thorn"?.3:.2,hm==="thorn"?3:4),hm==="thorn"?steelD:gold,[Math.cos(ca2)*.38*hr,.4,Math.sin(ca2)*.38*hr],[Math.sin(ca2)*(hm==="thorn"?.7:.15),0,-Math.cos(ca2)*(hm==="thorn"?.7:.15)])}if(hm==="crown")add(hs,Oc(.07),hsk?hsk.acc:wGlow,[0,.3,.42],0,[1,1.3,.6],1)}
  else if(hm==="mask"){add(hs,Bx(.46,.36,.1),steel,[0,-.02,.36],0,[1,1,.6]);add(hs,Bx(.1,.05,.03),dark,[-.14,.03,.42]);add(hs,Bx(.1,.05,.03),dark,[.14,.03,.42]);add(hs,Co(.07,.2,3),steelD,[0,-.12,.44],[PI,0,0])}
  else if(hm==="veil"){var vc=hsk?hsk.p:c2;add(hs,Cy(.44,.46,.5,7),vc,[0,-.05,-.04],0,[1,1,.95]);add(hs,Bx(.42,.3,.03),sh(vc,1.3),[0,-.12,.4]);add(hs,S(.42,7,4,0,PI*2,0,PI*.5),vc,[0,.1,-.02])}
  else if(hm==="horned"){
@@ -326,9 +362,9 @@ function WOW_build(T,A,pv){
   if(CL.mask)add(hs,Bx(.38,.2,.06),CL.exec?leathD:C(2763315),[0,-.1,.4]);
   if(CL.exec)add(hs,Bx(.5,.3,.05),leathD,[0,.12,.4])}
  else if(hm==="band"){
-  add(hs,Cy(.4,.4,.1,7),c2,[0,.16,0]);add(hs,Bx(.09,.4,.03),c2,[-.1,-.0,-.4],[.2,0,.1]);add(hs,Bx(.09,.36,.03),c2,[.1,-.02,-.42],[.2,0,-.1])}
+  add(hs,Cy(.4*hr,.4*hr,.1,7),c2,[0,.16,0]);add(hs,Bx(.09,.4,.03),c2,[-.1,-.0,-.4],[.2,0,.1]);add(hs,Bx(.09,.36,.03),c2,[.1,-.02,-.42],[.2,0,-.1])}
  else if(hm==="circlet"){
-  add(hs,Cy(.39,.39,.07,7),CL.gold||CL.trim?gold:C(16769126),[0,.22,0]);
+  add(hs,Cy(.39*hr,.39*hr,.07,7),CL.gold||CL.trim?gold:C(16769126),[0,.22,0]);
   add(hs,Oc(.07),CL.bolt?C(3646463):(CL.halo?C(16775388):wGlow),[0,.26,.38],0,[1,1.4,.7],1);
   if(CL.halo)add(hs,Cy(.38,.38,.02,12),C(16775388),[0,.66,-.05],0,0,1)}
  else if(hm==="hat"){
@@ -338,7 +374,7 @@ function WOW_build(T,A,pv){
  else if(hm==="antlers"){
   var an2=C(9136946);
   for(var aa=-1;aa<=1;aa+=2){add(hs,Cy(.025,.04,.5,4),an2,[aa*.22,.55,0],[0,0,-aa*.45]);add(hs,Cy(.02,.03,.3,4),an2,[aa*.34,.72,0],[0,0,-aa*.9]);add(hs,Cy(.02,.03,.26,4),an2,[aa*.28,.82,0],[0,0,aa*.2])}
-  add(hs,Cy(.38,.4,.08,7),C(5929525),[0,.2,0])}
+  add(hs,Cy(.38*hr,.4*hr,.08,7),C(5929525),[0,.2,0])}
  // ---------- BODY mesh (class coloured, flashes) ----------
  var bodyMat=new T.zt({color:(ask?ask.p.clone():(NA?skin.clone():cls.clone())),emissive:(NA?skin:cls).clone().multiplyScalar(.22),emissiveIntensity:.22,roughness:DBA_LEGO?.26:.55,metalness:DBA_LEGO?.02:.2});
  var baseEm=(NA?skin:cls).clone().multiplyScalar(.22);

@@ -357,3 +357,32 @@ Confronto delle stringhe del bundle React originale (`module_no_assets.js`) con 
 - Bug 1: il creatore salvava `hairStyle`/`beardStyle` ma non i flag `hairPick`/`beardPick` che il modello (`wowbuild.js`, codice originale) richiede: i Troll mostravano sempre la cresta e le femmine la barba ignorava la scelta. Ora `hero3d.js` li imposta quando la scelta è esplicita.
 - Bug 2: Gnomo, Pandaren, Tauren e Worgen non hanno capelli nel modello (come nell'originale), ma il creatore mostrava comunque stili e colori che non facevano nulla. Ora per queste razze compare "questa razza non ha capelli" al posto delle opzioni.
 - Verificato (headless): Umano con Lungo, Cresta, Spinoso, Ricci cambia davvero; Troll con Lungo cambia; Tauren mostra il messaggio. Non verificato: tutte le razze × tutti gli stili, la barba, i salvataggi già esistenti (la scelta compare al riaprire il personaggio).
+
+## Capelli per tutte le razze, più stili di capelli e barba
+- `wowbuild.js` (non più "testo originale non modificato"): i capelli compaiono su tutte le razze (Gnomo, Pandaren, Tauren, Worgen inclusi); restano nascosti solo sotto cappuccio ed elmi.
+- Capelli: da 8 a 18 stili. Nuovi: Chignon, Caschetto, Frangia, Afro, Codini, Rasato (cresta centrale), Ciuffo, Treccia, Selvaggio, Corona.
+- Barba: da 5 a 12 stili. Nuovi: Lunga, Capra, Basette, Collare, Manubrio, Trecciata, Selvaggia. Disponibile per tutte le razze (anche per le razze col muso, solo se scelta) e per entrambi i sessi; Nani e Gnomi mantengono la barba di default finché non si sceglie altro; le barbe che pendono sono spostate in avanti per non sparire dentro il torso.
+- Il creatore (`start.js`) mostra 18 stili di capelli e 12 di barba per tutte le razze.
+- Verificato (headless): tutti i 18 stili di capelli sono distinti (umano); capelli visibili su 12 razze, tra cui Tauren, Worgen, Pandaren, Gnomo; le nuove barbe compaiono. Non verificato: tutte le razze × tutti gli stili, barbe viste frontalmente da vicino (l'anteprima ruota e i miei scatti sono piccoli), compatibilità con gli elmi, salvataggi esistenti.
+
+## Esperimento "collo e corpo più magro" (copia separata `dba-next-collo`)
+
+Fatto solo in `web/wowbuild.js` e `web/threeshim.js`; la versione precedente (`dba-next`) non è stata toccata.
+
+- **Collo**: la testa è alzata di 0,3 unità e un cilindro (colore pelle/pelo/osso/panda secondo la razza) la collega al busto.
+- **Corpo più magro**: `bw` (larghezza di busto, braccia, gambe, spalline) ×0,88.
+- **Barba**: dopo la costruzione i pezzi appesi sono compressi in verticale (`fitHang`) in modo che la punta non scenda sotto il petto, e spostati di 0,07 in avanti.
+- **Capelli**: stessa compressione (lati e retro con limiti diversi), retro spostato indietro di 0,08. Con elmo/cappuccio/elmo cornuto/velo/cappello i capelli non vengono più disegnati; sotto elmo resta solo una frangia posteriore sotto il bordo.
+- **Corone, cerchietti, bande, spine, palchi**: anello ingrandito del 16% per stare sopra i capelli senza attraversarli.
+- `threeshim.js`: le geometrie espongono `parameters` (altezza/raggio), necessarie a `fitHang`.
+
+Non verificato: nessun test numerico di collisione (solo screenshot), elmi equipaggiati reali, tutte le razze × tutti gli stili.
+
+### Ritocco: barbe più vicine, ciuffi più corti
+- Barba: spostamento in avanti ridotto da 0,07 a 0,015, così resta attaccata al mento.
+- Ciuffi laterali: limite del fondo a livello mento (-0,3), larghezza ×0,7 e profondità ×0,75.
+- Verificato solo con screenshot (umano, nano, orco); non su elmi equipaggiati.
+
+### Ritocco: barbe piatte
+- Le barbe non sono più coni: sono ellissoidi appiattiti (profondità 0,16), leggermente inclinati in avanti, appoggiati sul mento (helper `FB` in `wowbuild.js`). Stili 0, 1, 4, 5, 9, 10, 11 modificati; gli altri erano già piatti.
+- Verificato solo con screenshot (umano, nano, gnomo).
