@@ -386,3 +386,19 @@ Non verificato: nessun test numerico di collisione (solo screenshot), elmi equip
 ### Ritocco: barbe piatte
 - Le barbe non sono più coni: sono ellissoidi appiattiti (profondità 0,16), leggermente inclinati in avanti, appoggiati sul mento (helper `FB` in `wowbuild.js`). Stili 0, 1, 4, 5, 9, 10, 11 modificati; gli altri erano già piatti.
 - Verificato solo con screenshot (umano, nano, gnomo).
+
+### Articolazioni dei personaggi (senza sfere)
+- Spalle, gomiti, anche e ginocchia hanno ora un cilindretto trasversale dello stesso colore dell'arto, più stretto dell'arto stesso: riempie il vuoto quando si piega e non sporge in posa di riposo (`wowbuild.js`).
+- Le palle di spalla sono diventate calotte tronche allineate al braccio; la mano non è più un icosaedro ma un blocchetto affusolato.
+- Nessuna sfera di giunzione visibile. Mostri non toccati.
+- Verificato solo in posa di riposo (anteprima del creatore); non ancora con il personaggio in movimento.
+
+## Correzione: mondo bloccato dopo la chiusura dell'inventario
+- Causa: quando l'inventario si apre dalla locanda o dal pulsante 🎒, il mondo viene messo in pausa e riparte solo quando `window.__dbaInvOpen` torna `false` dopo essere stato `true`. Il nuovo inventario non impostava mai il segnale a `true`, quindi la pausa non veniva mai tolta.
+- Fix (`index.html`, `__dbaOpenInv`): il segnale diventa `true` all'apertura e `false` alla chiusura.
+- Verificato in headless: prima della correzione il personaggio restava fermo dopo la chiusura, dopo la correzione si muove. Non verificato: la sparizione delle texture al ritorno sulla scheda del browser (non riprodotta; la perdita del contesto WebGL forzata si è ripresa correttamente).
+
+## Battaglie più lunghe e pannello "Comanda 1 eroe"
+- **Sovrapposizione:** con "Comanda 1 eroe" il pannello abilità dell'eroe controllato (`#dbaCtl`, `orig/script_14.js`) copriva la barra Ultimate e le icone del party. La barra Ultimate ha `pointer-events:none` e il calcolo originale la saltava. Ora `hud.js` pubblica `--dbaCtlB` (altezza del dock + 70 px) e il pannello non scende mai sotto quel valore. Verificato a 1280×800 con 4 e 8 eroi.
+- **Durata:** i nemici di arena/mondo (`DBA_MKB` in `world.bundle.js`) avevano il 12% dei PV di un boss (campione 30%). Ora 18% e 80%. La durata reale non è stata misurata in modo affidabile: la simulazione automatica non riproduce il gioco vero (eroi sconfitti troppo presto o troppo forti), quindi il valore è una stima da affinare con la tua esperienza.
+- **Menù:** diario, mappa, impostazioni e inventario dal mondo riportano tutti il gioco in marcia (personaggio si muove dopo la chiusura). Non provati: locanda, mercante, taglie, bacheche.

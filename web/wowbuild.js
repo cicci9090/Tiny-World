@@ -54,8 +54,8 @@ function WOW_build(T,A,pv){
    var legC=plate?steel:(leather?leathD:(cloth?sh(cls,.6):skin));
    if(pandaLim)legC=dark;
    if(bare&&!pandaLim)legC=NA?skin:sh(cls,.55);
-   LGT="t"+sx;add(stat,Cy(.15*bw,.12*bw,.34,6),legC,[sx*lx,.36,0]);LGT="s"+sx;
-   add(stat,Cy(.12*bw,.1*bw,.3,6),plate?steel:(R.fur?C(furC):legC),[sx*lx,.16,0]);
+   LGT="t"+sx;add(stat,Cy(.15*bw,.12*bw,.34,6),legC,[sx*lx,.36,0]);add(stat,Cy(.1*bw,.1*bw,.2*bw,10),legC,[sx*lx,.53,0],[0,0,PI/2]);LGT="s"+sx;
+   add(stat,Cy(.12*bw,.1*bw,.3,6),plate?steel:(R.fur?C(furC):legC),[sx*lx,.16,0]);add(stat,Cy(.095*bw,.095*bw,.17*bw,10),plate?steel:(R.fur?C(furC):legC),[sx*lx,.3,0],[0,0,PI/2]);
    if(plate)add(stat,S(.1*bw,5,4),metal,[sx*lx,.34,.1],0,[1,.9,.8])}}
  for(var sx2=-1;sx2<=1;sx2+=2){LGT="s"+sx2;
   if(R.hoof){add(stat,Cy(.09*bw,.12*bw,.2,5),dark,[sx2*lx,.1,.02]);add(stat,Co(.06,.1,4),dark,[sx2*lx,.03,.1],[PI/2,0,0])}
@@ -115,7 +115,7 @@ function WOW_build(T,A,pv){
   if(pt==="round"||pt==="big"||pt==="huge"||pt==="big1"||pt==="spiked"||pt==="small"){
    var pr=pt==="huge"?.34:(pt==="big"||pt==="big1"?.28:(pt==="small"?.18:.22));
    if(pt==="big1"&&ps===1)pr=.16;
-   add(stat,S(pr,6,4),shCol?shCol:(PA==="small"?(cloth?sh(cls,.85):leathD):(CL.stone?C(8021578):metal)),[px,py,0],0,[1.1,.7,1.05]);if(ssk&&ssk.t>=2)add(stat,Oc(.05),ssk.acc,[px,py+.14,.05],0,0,1);
+   add(stat,Cy(pr*.6,pr*.85,pr*.7,10),shCol?shCol:(PA==="small"?(cloth?sh(cls,.85):leathD):(CL.stone?C(8021578):metal)),[px+ps*pr*.05,py+.01,0],[0,0,-ps*.12],[1,1,1.05]);if(ssk&&ssk.t>=2)add(stat,Oc(.05),ssk.acc,[px,py+.14,.05],0,0,1);
    if(pt==="big"||pt==="huge")add(stat,Co(pr*.45,pr*.8,4),CL.gold?gold:steelD,[px+ps*pr*.5,py+.06,0],[0,0,-ps*1.2]);
    if(pt==="spiked"){add(stat,Co(.07,.32,4),steelD,[px+ps*.1,py+.2,0],[0,0,-ps*.5]);add(stat,Co(.05,.2,4),steelD,[px+ps*.05,py+.12,.14],[.7,0,-ps*.3])}}
   else if(pt==="fur"){add(stat,S(.26,5,4),C(8018490),[px,py,0],0,[1.2,.7,1.1]);for(var ft=0;ft<4;ft++)add(stat,Co(.05,.16,3),C(8018490),[px+ps*(.1+ft*.04),py-.05,.1-ft*.08],[0,0,ps*2.2])}
@@ -123,7 +123,7 @@ function WOW_build(T,A,pv){
   else if(pt==="skull"){add(stat,Ic(.15),bone,[px,py+.08,0]);add(stat,Bx(.04,.04,.03),dark,[px-.04,py+.1,.13]);add(stat,Bx(.04,.04,.03),dark,[px+.04,py+.1,.13])}
   else if(pt==="ice"){add(stat,Oc(.16),C(10475775),[px,py+.1,0],0,[1,1.5,1],0);add(stat,Co(.06,.25,4),C(14281727),[px+ps*.1,py+.28,0],[0,0,-ps*.3])}
   else if(pt==="bolt"){add(stat,S(.18,5,4),leathD,[px,py,0],0,[1.1,.7,1]);add(stat,Co(.04,.3,3),C(3646463),[px+ps*.08,py+.22,0],[0,0,-ps*.5],0,1)}
-  else{add(stat,S(.17,5,4),armCol,[px,py,0])}
+  else{add(stat,Cy(.12*bw,.13*bw,.1,10),armCol,[ps*.56*bw,py+.02,0])}
   if(plate)for(var lm=1;lm<=2;lm++)add(stat,Cy(.2-lm*.025,.17-lm*.025,.045,8),lm==1?metal:steelD,[px+ps*lm*.02,py-.1-lm*.065,0],[0,0,ps*.12],[1.1,1,1.05]);
  }
  LGT=null;
@@ -131,10 +131,11 @@ function WOW_build(T,A,pv){
  for(var as=-1;as<=1;as+=2){
   var B=as<0?aL:aR,sl=armCol,aw=R.gnome?.78:1;
   if(R.panda)sl=dark;
-  add(B,Cy(.13*bw*aw,.11*bw*aw,.34,6),sl,[0,-.18,0]);
+  add(B,Cy(.13*bw*aw,.11*bw*aw,.34,6),sl,[0,-.18,0]);add(B,Cy(.1*bw*aw,.1*bw*aw,.17*bw*aw,10),sl,[0,-.02,0],[0,0,PI/2]);
   add(B,Cy(.11*bw*aw,.09*bw*aw,.28,6),plate?steelD:(leather?leathD:(bare?(R.panda?dark:skin):sh(cls,.7))),[0,-.4,0]);
+  add(B,Cy(.085*bw*aw,.085*bw*aw,.15*bw*aw,10),plate?steelD:(leather?leathD:(bare?(R.panda?dark:skin):sh(cls,.7))),[0,-.345,0],[0,0,PI/2]);
   if(plate)add(B,Cy(.125*bw,.1*bw,.18,6),CL.gold?gold:steel,[0,-.43,0]);
-  if(DBA_LEGO)add(B,Cy(.09*bw,.09*bw,.13,10),R.panda?dark:(plate?steelD:skin),[0,-.56,.01],[PI/2,0,0]);else add(B,Ic(.1),R.panda?dark:(plate?steelD:skin),[0,-.56,.01]);
+  if(DBA_LEGO)add(B,Cy(.09*bw,.09*bw,.13,10),R.panda?dark:(plate?steelD:skin),[0,-.56,.01],[PI/2,0,0]);else add(B,Cy(.085*bw,.062*bw,.15,7),R.panda?dark:(plate?steelD:skin),[0,-.56,.02],[.12,0,0],[1.15,1,.85]);
   var holdsW=(NK&&!iw)?false:as>0?!!(A.weapon||iw):!!(CL.dual||(iw&&WOW_skin(T,iw).k==="Pugnali Gemelli"));
   if(!holdsW){for(var fg=-1.5;fg<=1.5;fg++)add(B,Cy(.017*bw,.014*bw,.09,5),R.panda?dark:(plate?steelD:skin),[fg*.032*bw,-.62,.05],[.7,0,0]);
   add(B,Cy(.02*bw,.016*bw,.08,5),R.panda?dark:(plate?steelD:skin),[.07*bw,-.58,.04],[.5,0,.8])}
