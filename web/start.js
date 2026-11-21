@@ -42,6 +42,7 @@
     return '<div id="dba-warn">Attenzione: nessun ' + (!t && !h ? 'tank e nessun healer' : !t ? 'tank' : 'healer') + ' nel party.</div>';
   }
   function showParty() {
+    const sc = window.scrollY; root.style.minHeight = root.offsetHeight + 'px'; // evita che il ridisegno accorci la pagina e faccia saltare lo scroll
     const cnt = counts(), dis = !state.roster.length;
     const cards = (s) => s.cards.map((c) => '<div data-k="' + c.key + '" class="text-left rounded-lg border border-white/10 ' + c.cls + ' p-2 transition relative hover:scale-[1.02] cursor-pointer"><div class="flex items-center gap-1.5"><span class="text-lg">' + c.icon + '</span><span class="text-white text-xs font-semibold truncate flex-1">' + E(c.name) + '</span>' + (cnt[c.key] ? '<span class="text-[10px] text-white/80 bg-black/40 rounded px-1">' + cnt[c.key] + '</span>' : '') + '</div><div class="text-[9px] text-white/70 mt-0.5">' + E(c.stats) + '</div><button data-v="' + c.key + '" class="mt-1.5 w-full text-[10px] py-1 rounded bg-black/40 hover:bg-black/60 text-white/90 border border-white/10 transition">🔍 Visualizza 3D</button></div>').join('');
     const chips = state.roster.map((r) => { const c = CARD[r.k]; return '<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-gradient-to-br ' + c.cls.replace('bg-gradient-to-br ', '').replace(' bg-opacity-10', '') + ' bg-opacity-20 border border-white/10"><span>' + c.icon + '</span><span class="text-sm text-white truncate max-w-[110px]">' + E(r.name || c.name) + '</span><button data-c="' + r.uid + '" title="Personalizza" class="text-white/70 hover:text-amber-300 text-sm leading-none">🎨</button><button data-x="' + r.uid + '" class="text-white/50 hover:text-red-300 text-xs leading-none">✕</button></div>'; }).join('');
@@ -49,14 +50,14 @@
       + SECS.map((s) => '<div class="space-y-2"><div class="flex items-center gap-2"><span class="font-display text-amber-200 text-sm">' + E(s.title) + '</span><span class="text-[10px] text-slate-500 bg-white/5 rounded px-1.5 py-0.5">' + E(s.sub) + '</span></div><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">' + cards(s) + '</div></div>').join('')
       + '<div><div class="flex items-center justify-between mb-2"><span class="text-slate-400 text-sm">Roster</span><span class="text-sm font-semibold text-slate-300">' + state.roster.length + ' / ' + MAXP + '</span></div><div class="flex flex-wrap gap-2">' + chips + '</div></div>' + warn()
       + '<button id="go" ' + (dis ? 'disabled ' : '') + 'class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-red-600 text-white font-display text-lg transition hover:scale-[1.01] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">️⚔️ Entra nell\'arena</button></div><div class="flex justify-center gap-2 mt-4 flex-wrap"><button id="chg" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.05] border border-white/10 text-slate-400 text-sm hover:bg-white/[0.1] transition">↺ Cambia salvataggio</button></div>' + TAIL;
-    const sc = window.scrollY;
+    window.scrollTo(0, sc); root.style.minHeight = '';
     root.querySelector('#cname').oninput = function () { state.name = this.value; };
     root.querySelectorAll('div[data-k]').forEach((d) => d.onclick = (e) => {
       if (e.target.closest('button')) return; if (state.roster.length >= MAXP) return;
-      state.roster.push({ uid: state.uid++, k: d.dataset.k, name: state.name.trim() || '' }); state.name = ''; save(); showParty(); window.scrollTo(0, sc);
+      state.roster.push({ uid: state.uid++, k: d.dataset.k, name: state.name.trim() || '' }); state.name = ''; save(); showParty();
     });
     root.querySelectorAll('button[data-v]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); view3d(b.dataset.v); });
-    root.querySelectorAll('button[data-x]').forEach((b) => b.onclick = () => { state.roster = state.roster.filter((r) => r.uid != b.dataset.x); save(); showParty(); window.scrollTo(0, sc); });
+    root.querySelectorAll('button[data-x]').forEach((b) => b.onclick = () => { state.roster = state.roster.filter((r) => r.uid != b.dataset.x); save(); showParty(); });
     root.querySelectorAll('button[data-c]').forEach((b) => b.onclick = () => customize(state.roster.find((r) => r.uid == b.dataset.c)));
     root.querySelector('#fill').onclick = () => {
       const keys = Object.keys(CL), pick = (arch) => { const a = keys.filter((k) => CL[k].arch === arch); return a[Math.random() * a.length | 0]; };
@@ -64,7 +65,7 @@
       const have = (a) => state.roster.some((r) => CL[r.k].arch === a) || add.some((k) => CL[k].arch === a);
       if (need > 0 && !have('tank')) add.push(pick('tank')); if (need > 1 && !have('healer')) add.push(pick('healer'));
       while (add.length < need) add.push(keys[Math.random() * keys.length | 0]);
-      add.slice(0, need).forEach((k) => state.roster.push({ uid: state.uid++, k, name: '' })); save(); showParty(); window.scrollTo(0, sc);
+      add.slice(0, need).forEach((k) => state.roster.push({ uid: state.uid++, k, name: '' })); save(); showParty();
     };
     root.querySelector('#go').onclick = () => { if (!state.roster.length) return; save(); location.href = 'index.html?slot=' + state.slot; };
     root.querySelector('#chg').onclick = () => showSlots();

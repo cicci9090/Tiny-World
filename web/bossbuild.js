@@ -125,16 +125,16 @@ function hum(P0){const sz=P0.sz||1,m=bM(P0.b?'stone':'skin'),g=new zn;P={m};
  if(H=='helm'){ad(hd,new BG(.5,.07,.1),gM,0,.05,.5);ad(hd,new CG(.12,.8,6),aM,.4,.45,0,0,0,-.5);ad(hd,new CG(.12,.8,6),aM,-.4,.45,0,0,0,.5)}
  if(H=='golem'){ad(hd,new BG(.6,.1,.1),gM,0,.1,.5)}
  for(const s of[-1,1]){const c=s<0?cL:cR;c.position.set(s*1.15,1.0,0);g.add(c);
-  ad(g,P0.b?new BG(.9,.7,.9):new SG(.5,14,10),P0.b?m:aM,s*1.1,1.0,0);
-  ad(c,P0.b?new BG(.45,.9,.45):new VG(.26,.8,6,12),m,0,-.55,0);ad(c,P0.b?new BG(.4,.8,.4):new VG(.22,.7,6,12),m,0,-1.3,.1,-.3);
-  ad(c,P0.b?new BG(.6,.6,.6):new SG(.32,12,10),m,0,-1.85,.25);
+  ad(g,P0.b?new BG(.9,.7,.9):new FG(.3,.3,.62,14),P0.b?m:m,s*1.1,1.0,0,0,0,P0.b?0:Math.PI/2);
+  ad(c,P0.b?new BG(.45,.9,.45):new VG(.26,.8,6,12),m,0,-.55,0);const el=dm();el.position.set(0,-1.0,0);c.add(el);const ei=dm();ei.position.set(0,1.0,0);el.add(ei);c.el=el;ad(ei,new FG(.2,.2,.42,10),m,0,-1.0,0,0,0,Math.PI/2);ad(ei,P0.b?new BG(.4,.8,.4):new VG(.22,.7,6,12),m,0,-1.3,.1,-.3);
+  ad(ei,P0.b?new BG(.6,.6,.6):new SG(.32,12,10),m,0,-1.85,.25);
   if(s>0){const w=P0.w;
-   if(w=='axe'){ad(c,new FG(.07,.07,2.6,8),hM,0,-1.7,.4,Math.PI/2*0,0,0);ad(c,new BG(.9,.8,.12),aM,.45,-.7,.4);ad(c,new CG(.4,.5,3),aM,.9,-.7,.4,0,0,-Math.PI/2,1,1,.3)}
-   if(w=='club'){ad(c,new FG(.28,.16,2.4,10),hM,0,-1.2,.4);for(let k=0;k<6;k++)ad(c,new CG(.06,.25,5),aM,Math.sin(k*1.05)*.3,-.4-k*.15,.4+Math.cos(k*1.05)*.3)}
-   if(w=='staff'){ad(c,new FG(.05,.05,3.4,8),hM,0,-1.0,.4);ad(c,new SG(.28,14,10),gM,0,.8,.4);ad(c,new TG(.3,.04,6,16),aM,0,.8,.4)}
-   if(w=='sword'){ad(c,new BG(.2,2.4,.06),aM,0,-.5,.45);ad(c,new BG(.7,.1,.12),new zt({color:'#d9a441',metalness:.8}),0,-1.7,.45)}
-   if(w=='whip')for(let k=0;k<10;k++)ad(c,new SG(.07,8,6),gM,Math.sin(k*.5)*.5,-1.9+k*.05,.4+k*.3)}}
- for(const s of[-1,1]){ad(g,P0.b?new BG(.55,.9,.6):new VG(.3,.8,6,12),m,s*.5,-.75,0);ad(g,P0.b?new BG(.5,.8,.55):new VG(.26,.7,6,12),m,s*.5,-1.25,.05);ad(g,new BG(.55,.25,.9),P0.b?m:aM,s*.5,-1.42,.2)}
+   if(w=='axe'){ad(ei,new FG(.07,.07,2.6,8),hM,0,-1.7,.4,Math.PI/2*0,0,0);ad(ei,new BG(.9,.8,.12),aM,.45,-.7,.4);ad(ei,new CG(.4,.5,3),aM,.9,-.7,.4,0,0,-Math.PI/2,1,1,.3)}
+   if(w=='club'){ad(ei,new FG(.28,.16,2.4,10),hM,0,-1.2,.4);for(let k=0;k<6;k++)ad(ei,new CG(.06,.25,5),aM,Math.sin(k*1.05)*.3,-.4-k*.15,.4+Math.cos(k*1.05)*.3)}
+   if(w=='staff'){ad(ei,new FG(.05,.05,3.4,8),hM,0,-1.0,.4);ad(ei,new SG(.28,14,10),gM,0,.8,.4);ad(ei,new TG(.3,.04,6,16),aM,0,.8,.4)}
+   if(w=='sword'){ad(ei,new BG(.2,2.4,.06),aM,0,-.5,.45);ad(ei,new BG(.7,.1,.12),new zt({color:'#d9a441',metalness:.8}),0,-1.7,.45)}
+   if(w=='whip')for(let k=0;k<10;k++)ad(ei,new SG(.07,8,6),gM,Math.sin(k*.5)*.5,-1.9+k*.05,.4+k*.3)}}
+ for(const s of[-1,1]){const lg=dm();lg.position.set(s*.5,-.3,0);g.add(lg);LG.push(lg);ad(lg,P0.b?new BG(.55,.9,.6):new VG(.3,.8,6,12),m,0,-.45,0);const kn=dm();kn.position.set(0,-.7,0);lg.add(kn);lg.kn=kn;ad(kn,new FG(.18,.18,.36,10),m,0,0,0,0,0,Math.PI/2);ad(kn,P0.b?new BG(.5,.8,.55):new VG(.26,.7,6,12),m,0,-.25,.05);ad(kn,new BG(.55,.25,.9),P0.b?m:aM,0,-.42,.2)}
  if(P0.wing){wL=wingG(-1,false);wR=wingG(1,false);wL.position.set(-.6,.9,-.5);wR.position.set(.6,.9,-.5);wL.rotation.z=1;wR.rotation.z=-1;g.add(wL,wR)}
  if(P0.b&&K=='golem'){ad(g,new SG(.3,14,10),gM,0,.5,.6)}
  g.scale.setScalar(sz);A.add(g)}

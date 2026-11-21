@@ -42,6 +42,8 @@
           if (an.type === 'slash') { aw = -sg * 1.9; al = sg * .8; } else if (an.type === 'breath') { asc = 1 + sg * .22; aj = sg * .6; } else if (an.type === 'wind') { const e = Math.min(1, G * 1.3); aw = -e * 1.5; aj = e * .55; asc = 1 + e * .1; al = -e * .35; } }
         b._cr = (b._cr || 0) + (aw - (b._cr || 0)) * Math.min(1, 14 * Math.max(.016, dtt || .016));
         if (b.clawL && b.clawR) { b.clawL.rotation.x = -sn * .6 * mv + b._cr * .6; b.clawR.rotation.x = sn * .6 * mv + b._cr; }
+        if (b.clawL && b.clawL.el) { b.clawL.el.rotation.x = -(.2 + .45 * mv * Math.max(0, sn) + .45 * Math.abs(b._cr)); b.clawR.el.rotation.x = -(.2 + .45 * mv * Math.max(0, -sn) + .45 * Math.abs(b._cr)); }
+        if (b.legs && b.legs.length > 1 && b.legs[0].kn) { b.legs[0].kn.rotation.x = Math.max(0, -sn) * .8 * mv; b.legs[1].kn.rotation.x = Math.max(0, sn) * .8 * mv; }
         b.tailSeg.forEach(([q], i) => { q.rotation.y = Math.sin(T * (2.6 + mv * 2.4) - i * .55) * (.09 + i * .012) * (1 + mv * 1.1); q.rotation.x = Math.sin(T * 2 - i * .4) * .035; });
         if (b.wingL && b.wingR) { const f = window.__noflap ? 0 : Math.sin(T * (3 + mv * 4)) * (.22 + mv * .22); b.wingL.rotation.x = f; b.wingR.rotation.x = -f; }
         if (b.jaw && B.jaw) b.jaw.rotation.x = B.jaw[0] + cast * .5 + aj + Math.max(0, Math.sin(T * 1.1)) * .06;

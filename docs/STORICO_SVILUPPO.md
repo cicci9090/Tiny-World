@@ -402,3 +402,33 @@ Non verificato: nessun test numerico di collisione (solo screenshot), elmi equip
 - **Sovrapposizione:** con "Comanda 1 eroe" il pannello abilità dell'eroe controllato (`#dbaCtl`, `orig/script_14.js`) copriva la barra Ultimate e le icone del party. La barra Ultimate ha `pointer-events:none` e il calcolo originale la saltava. Ora `hud.js` pubblica `--dbaCtlB` (altezza del dock + 70 px) e il pannello non scende mai sotto quel valore. Verificato a 1280×800 con 4 e 8 eroi.
 - **Durata:** i nemici di arena/mondo (`DBA_MKB` in `world.bundle.js`) avevano il 12% dei PV di un boss (campione 30%). Ora 18% e 80%. La durata reale non è stata misurata in modo affidabile: la simulazione automatica non riproduce il gioco vero (eroi sconfitti troppo presto o troppo forti), quindi il valore è una stima da affinare con la tua esperienza.
 - **Menù:** diario, mappa, impostazioni e inventario dal mondo riportano tutti il gioco in marcia (personaggio si muove dopo la chiusura). Non provati: locanda, mercante, taglie, bacheche.
+
+## Selezione party, aspetto in mondo aperto, articolazioni dei mostri
+- **Schermata party (`start.js`)**: ad ogni selezione la pagina saltava in cima, perché la posizione di scroll veniva salvata *dopo* il ridisegno e il vecchio handler la ripristinava con un valore vecchio. Ora lo scroll è salvato prima, l'altezza della pagina è mantenuta durante il ridisegno e i ripristini duplicati sono stati tolti. Verificato: dopo 3 click scrollY e posizione della carta restano identici.
+- **Aspetto in mondo aperto**: `world.bundle.js` conteneva una copia vecchia di `WOW_build`, quindi capelli, barbe, collo e corpo più magro non comparivano nel mondo. Ora la funzione è la stessa di `wowbuild.js` (testo sostituito per intero). Verificato in mondo aperto con 4 eroi di razze e stili diversi: capelli, barbe piatte e mohawk corrispondono a quelli scelti.
+- **Mostri umanoidi (`bossbuild.js` e copia nel bundle)**: spalla senza sfera, gomito con perno (forearm + pugno + arma ruotano insieme), anche e ginocchia con perno; animazione in `boss3d_orig.js` e nel mondo. Non toccati draghi, ragno, kraken, idra. Verificato solo che i boss si carichino e si vedano senza errori; le pieghe di gomiti e ginocchia non sono state osservate da vicino.
+
+## Missioni speciali nel mondo (viandanti, caccia, scorta)
+- 42 NPC "viandante" sparsi nei 14 biomi (2 cacciatori, 1 viandante per bioma: dispersi dispersi = scorta nei biomi dispari, "derubato" nei pari). Deterministici dal seed, stato salvato in `Q.sq`.
+- **Caccia**: servono 5 oggetti (pelle di troll, zanne d'orco, scaglie di drago, ecc.) dai nemici dedicati generati vicino al NPC con nomi particolari (Ciclope, Minotauro, orchi, troll, ragni, gargoyle, golem, draghi del bioma). Ogni uccisione: 30% di drop. Consegna al NPC per ricompensa (oro + equip).
+- **Aiuto**: 3 predoni da sconfiggere, poi ritorno dal NPC.
+- **Scorta**: il NPC segue il giocatore (movimento a tempo reale, 11 u/s), imboscata a metà strada, ricompensa all'arrivo al campo.
+- Diario: sezione "⭐ Missioni speciali". Nuove API del mondo: addNpc/rmNpc/moveNpc/spot/spawnQ/entAt.
+- Verificato in headless: offerta, accettazione, spawn nemici, battaglia, drop (16 uccisioni per 5 oggetti ≈ atteso 17), ricompensa, scorta (follow, imboscata, arrivo).
+- Non verificato: salvataggio/ricarica a metà missione, giocata reale su PC/GitHub Pages, diario a schermo, bilanciamento ricompense.
+
+## Missioni speciali: nemici sparsi nel bioma e consegne in altri biomi
+- Nemici delle missioni caccia (10) e aiuto (3 predoni) ora compaiono in punti casuali di tutto il bioma del NPC (non più vicino a lui).
+- ~45% delle missioni caccia/aiuto sono "con consegna": finito il lavoro compare un destinatario in un altro bioma (da 1 a 3 biomi di distanza, più spesso verso biomi più difficili). Per la consegna: XP e oro crescono con distanza e difficoltà del bioma di arrivo (XP = (base+bioma_dest×15)×(1+.35×distanza+.15×salita)), oggetto di rarità del bioma di arrivo.
+- Anche le missioni senza consegna ora danno XP. Il diario mostra la destinazione.
+- Verificato in headless: offerta con destinazione/XP, 10 nemici sparsi (spread ~1000 u), completamento, comparsa destinatario, messaggio al committente, ricompensa +XP e rimozione NPC.
+- Non verificato: salvataggio/ricarica con destinatario presente, aiuto con consegna, percorso reale a piedi, bilanciamento XP.
+
+## Minimappa: segnaposto delle missioni speciali
+- Rombi sulla minimappa (ai bordi se fuori vista): rosa = i 4 nemici più vicini della missione di caccia/aiuto attiva, verde = committente o destinatario quando il lavoro è finito, ciano = campo di arrivo per le scorte. Dati in `window.__sqInd` (aggiornati ogni 0,5 s), disegnati in `world.bundle.js` (entrambe le copie), separati dalla "Guida" gialla.
+- Verificato in headless: lista segnaposto corretta (4 nemici rosa → destinatario verde dopo il completamento) e rombo verde visibile sulla minimappa.
+- Non verificato: aspetto dei rombi rosa e ciano a schermo, leggibilità con molte missioni attive contemporaneamente.
+
+## Mappa grande (🗺): segnaposto missioni speciali
+- Gli stessi rombi della minimappa (rosa nemici, verde consegna, ciano scorta) sono ora disegnati nella mappa del menù 🗺, con voce in legenda.
+- Verificato in headless: rombi rosa visibili nel bioma della missione attiva. Non verificato: verde/ciano a schermo nella mappa grande.
